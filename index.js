@@ -850,7 +850,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Deep Think button functionality
-  deepthinkBtn.addEventListener("click", () => {
+  deepthinkBtn.addEventListener("("click", () => {
     // If already active, deactivate
     if (activeDeepThinkModel) {
       activeDeepThinkModel = null;
@@ -2561,7 +2561,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (role === "user") {
       messageElement.innerHTML = `
         <div class="message-header">
-          <span class="message-label">You</span><span class="message-timestamp">${timestamp}</span>
+          <span class="message-label">You: </span><span classmessage-timestamp">${timestamp}</span>
         </div>
         <div class="message-content">${content}</div>
         <div class="message-actions">
@@ -2628,7 +2628,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (role === "assistant") {
       messageElement.innerHTML = `
         <div class="message-header">
-          <span class="message-label">AI</span><span class="message-timestamp">${timestamp}</span>
+          <span class="message-label">AI: </span><span class="message-timestamp">${timestamp}</span>
         </div>
         <div class="message-content">${content ? marked.parse(content) : ""}</div>
         <div class="message-actions assistant-actions">
@@ -2868,7 +2868,7 @@ document.addEventListener("DOMContentLoaded", function () {
     await puter.kv.del("chat_history");
 
     // Add welcome message
-    addMessageToChat("assistant", "Hello! How can I help you today?");
+    //addMessageToChat("assistant", "Hello! How can I help you today?");
   }
 
   // Save chat message to KV store
@@ -2947,13 +2947,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
       } else if (!skipWelcome) {
         // Add welcome message for new users
-        addMessageToChat("assistant", "Hello! How can I help you today?");
+        //addMessageToChat("assistant", "Hello! How can I help you today?");
       }
     } catch (error) {
       console.error("Failed to load chat history:", error);
-      if (!skipWelcome) {
-        addMessageToChat("assistant", "Hello! How can I help you today?");
-      }
+      //if (!skipWelcome) {
+      //  addMessageToChat("assistant", "Hello! How can I help you today?");
+      //}
     }
   }
 

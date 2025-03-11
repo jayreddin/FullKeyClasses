@@ -1,5 +1,5 @@
 
-// Chat message handling functions
+// Chat message handling functions for JR AI Chat
 
 // Add message to chat UI
 export function addMessageToChat(role, content, chatContainer) {

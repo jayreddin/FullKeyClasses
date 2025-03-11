@@ -1514,6 +1514,69 @@ body.dark-theme .emoji-picker {
   color: black;
 }
 
+/* Image generation styles */
+.image-gen-options {
+  background-color: var(--attachment-bg);
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid var(--border-color);
+}
+
+.image-gen-row {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+}
+
+.image-gen-option {
+  flex: 1;
+}
+
+.image-gen-option label {
+  display: block;
+  font-size: 0.85rem;
+  margin-bottom: 4px;
+  color: var(--text-color);
+}
+
+.image-gen-select {
+  width: 100%;
+  padding: 6px;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  font-size: 0.85rem;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+.generated-images-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 15px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.generated-image-container {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--box-shadow);
+}
+
+.generated-image {
+  max-width: 100%;
+  width: 100%;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.generated-image:hover {
+  transform: scale(1.02);
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .message {

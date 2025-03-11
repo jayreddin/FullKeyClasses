@@ -1,5 +1,5 @@
 
-// Utility bar functionality
+// Utility bar functionality for JR AI Chat
 import { formatFileSize, readFileAsText, detectCodeLanguage, getModelDisplayName, getModelDescription } from './utils.js';
 
 export function setupUtilityBar(

@@ -18,6 +18,25 @@ import { initializeDOM } from './js/utils.js';
 
 
 document.addEventListener("DOMContentLoaded", function () {
+  // Set document title
+  document.title = "JR AI Chat";
+
+  // Set up theme toggle
+  const themeToggle = document.querySelector("#theme-toggle");
+  if (themeToggle) {
+    themeToggle.checked = document.body.classList.contains("dark-theme");
+    themeToggle.addEventListener("change", function() {
+      document.body.classList.toggle("dark-theme");
+      localStorage.setItem("theme", document.body.classList.contains("dark-theme") ? "dark" : "light");
+
+      // Toggle Prism theme for code highlighting
+      const prismDarkTheme = document.getElementById("prism-theme-dark");
+      if (prismDarkTheme) {
+        prismDarkTheme.disabled = !document.body.classList.contains("dark-theme");
+      }
+    });
+  }
+
   // Initialize the chat interface
   const chatContainer = document.getElementById("chat-container");
   const messageInput = document.getElementById("message-input");
@@ -157,6 +176,26 @@ document.addEventListener("DOMContentLoaded", function () {
   );
 
   setupSettings();
+
+  // Initialize theme preference
+  setupTheme();
+
+
+  // Initialize image generator
+  const imageGenOptions = document.getElementById("image-gen-options");
+  if (imageGenOptions) {
+    import('./js/imageGenerator.js').then(module => {
+      module.setupImageGenerator(
+        document.getElementById("model-selector"),
+        document.getElementById("message-input"),
+        document.getElementById("send-button"),
+        imageGenOptions,
+        document.getElementById("chat-container"),
+        addMessageToChat,
+        addTypingIndicator
+      );
+    });
+  }
 
   // Send message function
   async function sendMessage() {

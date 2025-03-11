@@ -2515,6 +2515,14 @@ document.addEventListener("DOMContentLoaded", function () {
         saveChatMessage("user", userMessage);
         saveChatMessage("assistant", fullResponse);
 
+        // Activate syntax highlighting for code blocks in the response
+        const contentElement = aiMessageElement.querySelector(".message-content");
+        if (contentElement) {
+          setTimeout(() => {
+            Prism.highlightAllUnder(contentElement);
+          }, 100);
+        }
+
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {
           speakText(fullResponse);
@@ -2534,6 +2542,14 @@ document.addEventListener("DOMContentLoaded", function () {
         // Store the message in chat history
         saveChatMessage("user", userMessage);
         saveChatMessage("assistant", response.text);
+
+        // Activate syntax highlighting for code blocks in the response
+        const contentElement = aiMessageElement.querySelector(".message-content");
+        if (contentElement) {
+          setTimeout(() => {
+            Prism.highlightAllUnder(contentElement);
+          }, 100);
+        }
 
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {

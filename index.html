@@ -1,0 +1,218 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JR AI Chat</title>
+  <script src="https://js.puter.com/v2/" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js" defer></script>
+  <!-- Add Prism.js for code highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css" id="prism-theme-dark" disabled>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-css.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-json.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-typescript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-jsx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-tsx.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-csharp.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-php.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-go.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-sql.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-container">
+    <header>
+      <h1>JR AI Chat!</h1>
+      <div class="model-selection-container">
+        <div class="setting-group model-selector-group">
+          <select id="model-selector" style="font-size: 1.1em; font-weight: 500;">
+            <option value="gpt-4o-mini">GPT-4o Mini (Default)</option>
+            <option value="gpt-4o">GPT-4o</option>
+            <option value="o3-mini">O3 Mini</option>
+            <option value="o1-mini">O1 Mini</option>
+            <option value="claude-3-7-sonnet">Claude 3.7 Sonnet</option>
+            <option value="claude-3-5-sonnet">Claude 3.5 Sonnet</option>
+            <option value="deepseek-chat">DeepSeek Chat</option>
+            <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+            <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+            <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            <option value="meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo">Meta-Llama-3.1-8B</option>
+            <option value="meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo">Meta-Llama-3.1-70B</option>
+            <option value="meta-llama/Meta-Llama-3.1-405B-Instruct-Turbo">Meta-Llama-3.1-405B</option>
+            <option value="mistral-large-latest">Mistral Large</option>
+            <option value="pixtral-large-latest">Pixtral Large</option>
+            <option value="codestral-latest">Codestral</option>
+            <option value="google/gemma-2-27b-it">Gemma 2-27B</option>
+            <option value="grok-beta">Grok Beta</option>
+            <option value="image-generator">IMG Gen (DALL-E)</option>
+          </select>
+        </div>
+      </div>
+    </header>
+    
+    <main>
+      <div id="chat-container" class="chat-container"></div>
+    </main>
+    
+    <footer>
+      <div class="utility-bar" id="utility-bar" style="padding: 5px 10px;">
+        <div class="utility-buttons" style="gap: 8px;">
+          <button class="utility-button" id="new-chat-btn" title="New Chat">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+          </button>
+          <button class="utility-button" id="history-btn" title="Chat History">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+          </button>
+          <button class="utility-button" id="image-upload-btn" title="Image Upload">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+              <circle cx="8.5" cy="8.5" r="1.5"></circle>
+              <polyline points="21 15 16 10 5 21"></polyline>
+            </svg>
+          </button>
+          <button class="utility-button" id="file-upload-btn" title="File Upload">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="12" y1="18" x2="12" y2="12"></line>
+              <line x1="9" y1="15" x2="15" y2="15"></line>
+            </svg>
+          </button>
+          <button class="utility-button" id="code-btn" title="Code Editor">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </button>
+          <button class="utility-button" id="websearch-btn" title="Web Search">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+              <line x1="11" y1="8" x2="11" y2="14"></line>
+            </svg>
+          </button>
+          <button class="utility-button" id="deepthink-btn" title="Deep Think">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </button>
+          <button class="utility-button" id="knowledgebase-btn" title="Knowledge Base">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+            </svg>
+          </button>
+          <button class="utility-button" id="settings-btn" title="Settings">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="active-model-indicator" class="active-model-indicator"></div>
+      </div>
+      <div id="utility-popup" class="utility-popup">
+        <div class="popup-content">
+          <div class="popup-header">
+            <h3 id="popup-title">Title</h3>
+            <button id="popup-close" class="popup-close-btn">×</button>
+          </div>
+          <div id="popup-body" class="popup-body"></div>
+          <div class="popup-footer">
+            <button id="popup-cancel" class="popup-btn popup-cancel-btn">Cancel</button>
+            <button id="popup-save" class="popup-btn popup-save-btn">Save</button>
+          </div>
+        </div>
+      </div>
+      <div class="input-container">
+        <div class="attachment-preview" id="attachment-preview"></div>
+        <div id="image-gen-options" class="image-gen-options" style="display: none;">
+          <div class="image-gen-row">
+            <div class="image-gen-option">
+              <label for="image-size">Image Size:</label>
+              <select id="image-size" class="image-gen-select">
+                <option value="256x256">256x256</option>
+                <option value="512x512" selected>512x512</option>
+                <option value="1024x1024">1024x1024</option>
+                <option value="1024x1792">1024x1792 (Portrait)</option>
+                <option value="1792x1024">1792x1024 (Landscape)</option>
+              </select>
+            </div>
+            <div class="image-gen-option">
+              <label for="image-style">Style:</label>
+              <select id="image-style" class="image-gen-select">
+                <option value="vivid">Vivid</option>
+                <option value="natural">Natural</option>
+                <option value="artistic">Artistic</option>
+                <option value="photographic">Photographic</option>
+              </select>
+            </div>
+          </div>
+          <div class="image-gen-row">
+            <div class="image-gen-option">
+              <label for="image-quality">Quality:</label>
+              <select id="image-quality" class="image-gen-select">
+                <option value="standard">Standard</option>
+                <option value="hd" selected>HD</option>
+              </select>
+            </div>
+            <div class="image-gen-option">
+              <label for="image-count">Number of Images:</label>
+              <select id="image-count" class="image-gen-select">
+                <option value="1" selected>1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="input-row">
+          <button id="mic-button" class="mic-button" title="Voice input">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </button>
+          <textarea id="message-input" placeholder="Type your message here..."></textarea>
+          <button id="text-to-speech-toggle" class="tts-button" title="Toggle text-to-speech">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+            </svg>
+          </button>
+          <button id="send-button" class="send-button">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+        <input type="file" id="file-input" style="display: none;" multiple>
+      </div>
+    </footer>
+  </div>
+  
+  <script src="index.js"></script>
+</body>
+</html>

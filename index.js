@@ -849,8 +849,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }, 0);
   });
 
-  // Deep Think
-  deepthinkBtn.addEventListener("click", () => {
+  // Deep ThinkdeepthinkBtn.addEventListener("click", () => {
     // If already active, deactivate
     if (activeDeepThinkModel) {
       activeDeepThinkModel = null;
@@ -2327,9 +2326,53 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       // Combine message with knowledge base
-      const messageWithContext = additionalContext
+      let messageWithContext = additionalContext
         ? userMessage + additionalContext
         : userMessage;
+
+      // Process attachments for Vision AI or OCR
+      let attachmentContext = "";
+      let attachmentData = [];
+
+      // Process each valid attachment
+      for (const attachment of validAttachments) {
+        const processedAttachment = await processAttachmentForAI(attachment);
+        if (processedAttachment) {
+          attachmentData.push(processedAttachment);
+
+          if (processedAttachment.type === 'image') {
+            attachmentContext += `I'm attaching an image (${attachment.name}) for you to analyze. `;
+          } else if (processedAttachment.type === 'document') {
+            attachmentContext += `I'm attaching a document (${attachment.name}) for OCR analysis. `;
+          }
+        }
+      }
+
+      // Combine message with attachment context
+      if (attachmentContext) {
+        messageWithContext = `${messageWithContext}\n\n${attachmentContext}`;
+      }
+
+      // Add actual vision data to message
+      if (attachmentData.length > 0) {
+        // In a production environment, we would use the appropriate API format
+        // For now, we'll pass the description and assume the AI can interpret it
+        const images = attachmentData.filter(att => att.type === 'image');
+        if (images.length > 0) {
+          // In real implementation, we would include image data for vision analysis
+          // messages.push({ role: "user", content: messageWithContext, images: images.map(img => img.data) });
+
+          // For this demo, we'll just use text
+          messageWithContext += "\n\n[Vision analysis would happen here with the attached images]";
+        }
+
+        const documents = attachmentData.filter(att => att.type === 'document');
+        if (documents.length > 0) {
+          messageWithContext += "\n\n[OCR analysis would happen here with the attached documents]";
+        }
+      }
+
+      messages.push({ role: "user", content: messageWithContext });
 
       if (useStream) {
         // Get streaming response
@@ -2384,30 +2427,6 @@ document.addEventListener("DOMContentLoaded", function () {
           messages.unshift({ role: "system", content: systemPrompt });
         }
 
-        // Check for image attachments to process
-        let hasImageAttachments = false;
-        let imageContext = "";
-
-        for (const attachment of validAttachments) {
-          if (attachment.type.startsWith("image/")) {
-            hasImageAttachments = true;
-            // In production, use the real vision API
-            imageContext += "This message contains an image attachment. ";
-          } else if (
-            attachment.type === "application/pdf" ||
-            attachment.name.endsWith(".docx") ||
-            attachment.name.endsWith(".doc") ||
-            attachment.name.endsWith(".txt")
-          ) {
-            // Add instruction to OCR the document
-            imageContext += `This message contains a document attachment (${attachment.name}). Please analyze its contents. `;
-          }
-        }
-
-        // Add image context to message if needed
-        if (hasImageAttachments || imageContext) {
-          messageWithContext = `${messageWithContext}\n\n${imageContext}`;
-        }
 
         messages.push({ role: "user", content: messageWithContext });
 
@@ -2863,6 +2882,31 @@ document.addEventListener("DOMContentLoaded", function () {
     } catch (error) {
       console.error("Failed to load chat history:", error);
       addMessageToChat("assistant", "Hello! How can I help you today?");
+    }
+  }
+
+  // New function to process attachments for AI
+  async function processAttachmentForAI(attachment) {
+    if (!attachment) return null;
+
+    if (attachment.type.startsWith("image/")) {
+      try {
+        const base64 = await fileToBase64(attachment);
+        return { type: "image", name: attachment.name, data: base64 };
+      } catch (error) {
+        console.error("Failed to process image:", error);
+        return null;
+      }
+    } else if (
+      attachment.type === "application/pdf" ||
+      attachment.name.endsWith(".docx") ||
+      attachment.name.endsWith(".doc") ||
+      attachment.name.endsWith(".txt")
+    ) {
+      // Simulate OCR - in real application, call OCR API here
+      return { type: "document", name: attachment.name, data: "OCR Result Placeholder" };
+    } else {
+      return null;
     }
   }
 });

@@ -40,7 +40,13 @@
   <body>
     <div class="app-container">
       <header>
-        <h1>JR AI Chat!</h1>
+        <div class="logo-container">
+          <div class="logo-text">
+            <span>JR AI</span>
+            <span>Chat!</span>
+          </div>
+          <img src="generated-icon.png" alt="JR AI Chat Logo" class="logo-image">
+        </div>
         <div class="model-selection-container">
           <div class="setting-group model-selector-group">
             <select
@@ -81,9 +87,9 @@
         <div id="chat-container" class="chat-container"></div>
       </main>
 
-      <footer>
-        <div class="utility-bar" id="utility-bar" style="padding: 5px 10px">
-          <div class="utility-buttons" style="gap: 8px">
+      <div class="utility-bar" id="utility-bar">
+        <div class="active-model-indicator" id="active-model-indicator"></div>
+        <div class="utility-buttons" style="gap: 8px">
             <button class="utility-button" id="new-chat-btn" title="New Chat">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -249,9 +255,10 @@
               </svg>
             </button>
           </div>
-          <div id="active-model-indicator" class="active-model-indicator"></div>
-        </div>
-        <div id="utility-popup" class="utility-popup">
+          </div>
+      </div>
+      
+      <div id="utility-popup" class="utility-popup">
           <div class="popup-content">
             <div class="popup-header">
               <h3 id="popup-title">Title</h3>

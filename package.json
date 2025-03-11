@@ -1,0 +1,12 @@
+{
+  "name": "puter-ai-chat",
+  "version": "1.0.0",
+  "description": "AI Chat App using Puter.js",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "marked": "^9.1.5"
+  }
+}

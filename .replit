@@ -1,5 +1,1 @@
-run = "cowsay Configure me!"
-entrypoint = "README.md"
-
-[nix]
-channel = "stable-24_05"
+modules = ["nodejs-20", "nodejs-23"]

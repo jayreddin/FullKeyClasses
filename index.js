@@ -850,7 +850,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Deep Think button functionality
-  deepthinkBtn.addEventListener("("click", () => {
+  deepthinkBtn.addEventListener("click", () => {
     // If already active, deactivate
     if (activeDeepThinkModel) {
       activeDeepThinkModel = null;
@@ -1499,11 +1499,17 @@ document.addEventListener("DOMContentLoaded", function () {
           // Hide all sections
           document.querySelectorAll(".settings-section").forEach((section) => {
             section.classList.remove("active");
+            // Make sure no section shows when it shouldn't
+            section.style.display = "none";
           });
 
           // Show selected section
           const sectionId = tab.getAttribute("data-tab") + "-section";
-          document.getElementById(sectionId).classList.add("active");
+          const section = document.getElementById(sectionId);
+          if (section) {
+            section.classList.add("active");
+            section.style.display = "block";
+          }
         });
       });
 
@@ -2201,8 +2207,11 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("image-gen-options").style.display = "none";
 
       // Move utility buttons up when image gen is active
-      document.querySelector(".utility-bar").style.bottom = "70px";
-      document.querySelector(".active-model-indicator-container").style.bottom = "110px";
+      const utilityBar = document.querySelector(".utility-bar");
+      const activeModelIndicator = document.querySelector(".active-model-indicator-container");
+      
+      if (utilityBar) utilityBar.style.bottom = "70px";
+      if (activeModelIndicator) activeModelIndicator.style.bottom = "110px";
 
       // Create a message container for the AI response
       const aiMessageElement = addMessageToChat("assistant", "");
@@ -2640,7 +2649,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </svg>
           </div>
           <div class="action-button copy-button" title="Copy message">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2424" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
@@ -2945,15 +2954,11 @@ document.addEventListener("DOMContentLoaded", function () {
         history.forEach((msg) => {
           addMessageToChat(msg.role, msg.content);
         });
-      } else if (!skipWelcome) {
-        // Add welcome message for new users
-        //addMessageToChat("assistant", "Hello! How can I help you today?");
       }
+      // Removed welcome message completely
     } catch (error) {
       console.error("Failed to load chat history:", error);
-      //if (!skipWelcome) {
-      //  addMessageToChat("assistant", "Hello! How can I help you today?");
-      //}
+      // No welcome message on error either
     }
   }
 

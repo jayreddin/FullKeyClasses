@@ -246,9 +246,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Generate a new chat ID
     currentChatId = generateChatId();
-
-    // Add welcome message
-    addMessageToChat("assistant", "Hello! How can I help you today?");
   });
 
   // Chat history button handler
@@ -1488,6 +1485,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
       // Tab navigation
+      const settingsTabs = document.querySelectorAll(".settings-tab");
       settingsTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           // Remove active class from all tabs
@@ -1496,11 +1494,21 @@ document.addEventListener("DOMContentLoaded", function () {
           // Add active class to clicked tab
           tab.classList.add("active");
 
-          // Hide all sections
+          // Hide all sections and remove AI settings duplicate content
           document.querySelectorAll(".settings-section").forEach((section) => {
             section.classList.remove("active");
-            // Make sure no section shows when it shouldn't
             section.style.display = "none";
+
+            // Clean up any duplicated AI settings that shouldn't be in other tabs
+            if (section.id !== "ai-settings-section") {
+              // Remove duplicated AI settings from non-AI tabs
+              const aiSettingsElements = section.querySelectorAll('.advanced-settings-row, .slider-setting');
+              aiSettingsElements.forEach(el => {
+                if (el.closest('#ai-settings-section') === null) {
+                  el.remove();
+                }
+              });
+            }
           });
 
           // Show selected section
@@ -1581,7 +1589,7 @@ document.addEventListener("DOMContentLoaded", function () {
               window.location.reload();
             })
             .catch((error) => {
-              console.error("Failed to clear chat history:", error);
+              console.error("Failed to clearchat history:", error);
               alert("Failed to clear chat history. Please try again.");
             });
         }
@@ -2209,7 +2217,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // Move utility buttons up when image gen is active
       const utilityBar = document.querySelector(".utility-bar");
       const activeModelIndicator = document.querySelector(".active-model-indicator-container");
-      
+
       if (utilityBar) utilityBar.style.bottom = "70px";
       if (activeModelIndicator) activeModelIndicator.style.bottom = "110px";
 
@@ -2570,7 +2578,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (role === "user") {
       messageElement.innerHTML = `
         <div class="message-header">
-          <span class="message-label">You: </span><span classmessage-timestamp">${timestamp}</span>
+          <span class="message-label">You: </span><span class="message-timestamp">${timestamp}</span>
         </div>
         <div class="message-content">${content}</div>
         <div class="message-actions">
@@ -2969,7 +2977,32 @@ document.addEventListener("DOMContentLoaded", function () {
     if (attachment.type.startsWith("image/")) {
       try {
         const base64 = await fileToBase64(attachment);
-        return { type: "image", name: attachment.name, data: base64 };
+
+        // Add thumbnail preview to the chat
+        const thumbnailHTML = `
+          <div class="chat-image-thumbnail">
+            <img src="${base64}" alt="${attachment.name}" title="${attachment.name}">
+            <span class="remove-thumbnail">×</span>
+          </div>
+        `;
+
+        // Insert thumbnail to the attachmentPreview
+        const thumbnailDiv = document.createElement('div');
+        thumbnailDiv.innerHTML = thumbnailHTML;
+        thumbnailDiv.firstElementChild.querySelector('.remove-thumbnail').addEventListener('click', function() {
+          this.parentElement.remove();
+        });
+
+        attachmentPreview.appendChild(thumbnailDiv.firstElementChild);
+
+        // Return data for AI processing
+        return { 
+          type: "image", 
+          name: attachment.name, 
+          data: base64,
+          // Add vision compatibility flag to ensure image is processed by vision models
+          isVisionCompatible: true 
+        };
       } catch (error) {
         console.error("Failed to process image:", error);
         return null;
@@ -2978,37 +3011,85 @@ document.addEventListener("DOMContentLoaded", function () {
       attachment.type === "application/pdf" ||
       attachment.name.endsWith(".docx") ||
       attachment.name.endsWith(".doc") ||
-      attachment.name.endsWith(".txt")
+      attachment.name.endsWith(".txt") ||
+      attachment.name.endsWith(".rtf") ||
+      attachment.name.endsWith(".md") ||
+      attachment.name.endsWith(".json") ||
+      attachment.name.endsWith(".csv")
     ) {
-      // Simulate OCR - in real application, call OCR API here
-      return { type: "document", name: attachment.name, data: "OCR Result Placeholder" };
+      try {
+        // For documents, we'll read their content if possible
+        const content = await readFileContent(attachment);
+
+        // Create document thumbnail
+        const docIcon = getDocumentIcon(attachment.name);
+        const thumbnailHTML = `
+          <div class="chat-image-thumbnail document-thumbnail">
+            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f8f9fa;">
+              ${docIcon}
+            </div>
+            <span class="remove-thumbnail">×</span>
+          </div>
+        `;
+
+        // Insert thumbnail
+        const thumbnailDiv = document.createElement('div');
+        thumbnailDiv.innerHTML = thumbnailHTML;
+        thumbnailDiv.firstElementChild.querySelector('.remove-thumbnail').addEventListener('click', function() {
+          this.parentElement.remove();
+        });
+
+        attachmentPreview.appendChild(thumbnailDiv.firstElementChild);
+
+        return { 
+          type: "document", 
+          name: attachment.name, 
+          data: content || "Unable to extract document content", 
+          isOCRCompatible: true
+        };
+      } catch (error) {
+        console.error("Failed to process document:", error);
+        return { type: "document", name: attachment.name, data: "Error processing document: " + error.message };
+      }
     } else {
       return null;
     }
   }
 
-  // New function to process attachments for AI
-  async function processAttachmentForAI(attachment) {
-    if (!attachment) return null;
-
-    if (attachment.type.startsWith("image/")) {
-      try {
-        const base64 = await fileToBase64(attachment);
-        return { type: "image", name: attachment.name, data: base64 };
-      } catch (error) {
-        console.error("Failed to process image:", error);
-        return null;
-      }
-    } else if (
-      attachment.type === "application/pdf" ||
-      attachment.name.endsWith(".docx") ||
-      attachment.name.endsWith(".doc") ||
-      attachment.name.endsWith(".txt")
-    ) {
-      // Simulate OCR - in real application, call OCR API here
-      return { type: "document", name: attachment.name, data: "OCR Result Placeholder" };
-    } else {
-      return null;
+  // Helper to read various document formats
+  async function readFileContent(file) {
+    if (file.type === "text/plain" || 
+        file.name.endsWith(".txt") || 
+        file.name.endsWith(".md") || 
+        file.name.endsWith(".json") || 
+        file.name.endsWith(".csv")) {
+      return await readFileAsText(file);
     }
+
+    // For other document types, return placeholder
+    // In a full implementation, we'd use specialized libraries or APIs for each format
+    return `Document content from ${file.name} (${file.type}). In a real implementation, this would contain the extracted text.`;
+  }
+
+  // Helper to get document icon based on file extension
+  function getDocumentIcon(filename) {
+    const extension = filename.split('.').pop().toLowerCase();
+    const iconColor = {
+      'pdf': '#f40f02',
+      'doc': '#2b579a',
+      'docx': '#2b579a',
+      'txt': '#333333',
+      'md': '#663399',
+      'csv': '#217346',
+      'json': '#f5de1a',
+      'xls': '#217346',
+      'xlsx': '#217346'
+    }[extension] || '#888888';
+
+    return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+      <text x="12" y="16" text-anchor="middle" font-size="6" fill="${iconColor}" font-weight="bold">${extension.toUpperCase()}</text>
+    </svg>`;
   }
 });

@@ -1451,7 +1451,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set up settings functionality
     setTimeout(() => {
-      const settingsTabs = document.querySelectorAll(".settings-tab");
       const themeToggle = document.getElementById("settings-theme-toggle");
       const textSizeValue = document.getElementById("text-size-value");
       const textSizeDecrease = document.getElementById("text-size-decrease");

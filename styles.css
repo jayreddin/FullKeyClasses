@@ -1,3 +1,4 @@
+
 /* Base styles */
 * {
   box-sizing: border-box;
@@ -1537,55 +1538,55 @@ body.dark-theme .emoji-picker {
     width: 95%;
     padding: 10px;
   }
-
+  
   .app-container {
     max-width: 100%;
     margin: 0;
   }
-
+  
   .model-selection-container {
     flex-direction: column;
   }
-
+  
   header {
     flex-direction: column;
     padding: 8px;
     gap: 8px;
   }
-
+  
   .model-selector-group {
     min-width: auto;
     width: 100%;
   }
-
+  
   #model-selector {
     width: 100%;
     text-align: center;
     font-size: 0.9em;
   }
-
+  
   .utility-button {
     min-width: 30px;
     width: 30px;
     height: 30px;
   }
-
+  
   .utility-button svg {
     width: 16px;
     height: 16px;
   }
-
+  
   .settings-tabs {
     overflow-x: auto;
     white-space: nowrap;
     padding-bottom: 10px;
   }
-
+  
   .settings-tab {
     padding: 8px 12px;
     font-size: 0.9em;
   }
-
+  
   .popup-content {
     max-width: 95%;
     max-height: 90vh;
@@ -1596,27 +1597,27 @@ body.dark-theme .emoji-picker {
   .input-row {
     gap: 3px;
   }
-
+  
   textarea {
     padding: 0.5rem;
     min-height: 40px;
   }
-
+  
   .mic-button, .emoji-button, .tts-button {
     width: 32px;
     height: 32px;
     margin-right: 2px;
   }
-
+  
   .send-button {
     width: 40px;
     height: 40px;
   }
-
+  
   .popup-body {
     padding: 10px;
   }
-
+  
   .footer {
     padding: 10px;
   }

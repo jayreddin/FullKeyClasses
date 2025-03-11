@@ -1,38 +1,40 @@
 // Puter AI Chat App
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener("DOMContentLoaded", function () {
   // Initialize the chat interface
-  const chatContainer = document.getElementById('chat-container');
-  const messageInput = document.getElementById('message-input');
-  const sendButton = document.getElementById('send-button');
-  const modelSelector = document.getElementById('model-selector');
-  const clearButton = document.getElementById('clear-button');
-  const attachButton = document.getElementById('attach-button');
-  const fileInput = document.getElementById('file-input');
-  const attachmentPreview = document.getElementById('attachment-preview');
+  const chatContainer = document.getElementById("chat-container");
+  const messageInput = document.getElementById("message-input");
+  const sendButton = document.getElementById("send-button");
+  const modelSelector = document.getElementById("model-selector");
+  const clearButton = document.getElementById("clear-button");
+  const attachButton = document.getElementById("attach-button");
+  const fileInput = document.getElementById("file-input");
+  const attachmentPreview = document.getElementById("attachment-preview");
 
   // Utility bar elements
-  const utilityPopup = document.getElementById('utility-popup');
-  const popupTitle = document.getElementById('popup-title');
-  const popupBody = document.getElementById('popup-body');
-  const popupClose = document.getElementById('popup-close');
-  const popupCancel = document.getElementById('popup-cancel');
-  const popupSave = document.getElementById('popup-save');
-  const activeModelIndicator = document.getElementById('active-model-indicator');
+  const utilityPopup = document.getElementById("utility-popup");
+  const popupTitle = document.getElementById("popup-title");
+  const popupBody = document.getElementById("popup-body");
+  const popupClose = document.getElementById("popup-close");
+  const popupCancel = document.getElementById("popup-cancel");
+  const popupSave = document.getElementById("popup-save");
+  const activeModelIndicator = document.getElementById(
+    "active-model-indicator",
+  );
 
   // Utility buttons
-  const newChatBtn = document.getElementById('new-chat-btn');
-  const historyBtn = document.getElementById('history-btn');
-  const imageUploadBtn = document.getElementById('image-upload-btn');
-  const fileUploadBtn = document.getElementById('file-upload-btn');
-  const codeBtn = document.getElementById('code-btn');
-  const websearchBtn = document.getElementById('websearch-btn');
-  const deepthinkBtn = document.getElementById('deepthink-btn');
-  const knowledgebaseBtn = document.getElementById('knowledgebase-btn');
-  const settingsBtn = document.getElementById('settings-btn');
+  const newChatBtn = document.getElementById("new-chat-btn");
+  const historyBtn = document.getElementById("history-btn");
+  const imageUploadBtn = document.getElementById("image-upload-btn");
+  const fileUploadBtn = document.getElementById("file-upload-btn");
+  const codeBtn = document.getElementById("code-btn");
+  const websearchBtn = document.getElementById("websearch-btn");
+  const deepthinkBtn = document.getElementById("deepthink-btn");
+  const knowledgebaseBtn = document.getElementById("knowledgebase-btn");
+  const settingsBtn = document.getElementById("settings-btn");
 
   // Voice input and text-to-speech
-  const micButton = document.getElementById('mic-button');
-  const ttsButton = document.getElementById('text-to-speech-toggle');
+  const micButton = document.getElementById("mic-button");
+  const ttsButton = document.getElementById("text-to-speech-toggle");
 
   // Chat history management
   let chatHistory = [];
@@ -51,17 +53,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Helper functions for new features
   function generateChatId() {
-    return 'chat_' + Date.now();
+    return "chat_" + Date.now();
   }
 
   function generateChatTitle(messages) {
     if (messages.length < 2) return "New Chat";
     // Extract first user message as chat title or generate one
     for (const msg of messages) {
-      if (msg.role === 'user') {
+      if (msg.role === "user") {
         // Truncate and clean up the first user message to use as title
-        const title = msg.content.split('\n')[0].substring(0, 30);
-        return title + (title.length >= 30 ? '...' : '');
+        const title = msg.content.split("\n")[0].substring(0, 30);
+        return title + (title.length >= 30 ? "..." : "");
       }
     }
     return "New Chat";
@@ -98,8 +100,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Create image preview modal
-  const modal = document.createElement('div');
-  modal.className = 'image-modal';
+  const modal = document.createElement("div");
+  modal.className = "image-modal";
   modal.innerHTML = `
     <div class="modal-content">
       <span class="close-modal">&times;</span>
@@ -109,28 +111,28 @@ document.addEventListener('DOMContentLoaded', function() {
   document.body.appendChild(modal);
 
   // Modal functionality
-  const modalImage = document.getElementById('modal-image');
-  const closeModal = document.querySelector('.close-modal');
+  const modalImage = document.getElementById("modal-image");
+  const closeModal = document.querySelector(".close-modal");
 
-  closeModal.addEventListener('click', () => {
-    modal.style.display = 'none';
+  closeModal.addEventListener("click", () => {
+    modal.style.display = "none";
   });
 
-  window.addEventListener('click', (e) => {
+  window.addEventListener("click", (e) => {
     if (e.target === modal) {
-      modal.style.display = 'none';
+      modal.style.display = "none";
     }
   });
 
   // Function to show an image in the modal
   function showImageInModal(imageSrc) {
     modalImage.src = imageSrc;
-    modal.style.display = 'flex';
+    modal.style.display = "flex";
   }
 
   // Add global click event listener for images
-  document.addEventListener('click', (e) => {
-    if (e.target.tagName === 'IMG' && e.target.closest('.image-attachment')) {
+  document.addEventListener("click", (e) => {
+    if (e.target.tagName === "IMG" && e.target.closest(".image-attachment")) {
       showImageInModal(e.target.src);
     }
   });
@@ -139,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
   let currentAttachments = [];
 
   // Create emoji picker
-  const emojiButton = document.createElement('button');
-  emojiButton.className = 'emoji-button';
-  emojiButton.setAttribute('title', 'Insert emoji');
+  const emojiButton = document.createElement("button");
+  emojiButton.className = "emoji-button";
+  emojiButton.setAttribute("title", "Insert emoji");
   emojiButton.innerHTML = `
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="10"></circle>
@@ -151,40 +153,61 @@ document.addEventListener('DOMContentLoaded', function() {
     </svg>
   `;
 
-  const emojiPicker = document.createElement('div');
-  emojiPicker.className = 'emoji-picker';
+  const emojiPicker = document.createElement("div");
+  emojiPicker.className = "emoji-picker";
 
   // Common emojis
-  const emojis = ['😊', '👍', '🎉', '❤️', '😂', '🤔', '👀', '✅', '🚀', '🙏', '👋', '🔥', '⭐', '📎', '📅', '📌', '🏆', '💡', '🎯', '✨'];
+  const emojis = [
+    "😊",
+    "👍",
+    "🎉",
+    "❤️",
+    "😂",
+    "🤔",
+    "👀",
+    "✅",
+    "🚀",
+    "🙏",
+    "👋",
+    "🔥",
+    "⭐",
+    "📎",
+    "📅",
+    "📌",
+    "🏆",
+    "💡",
+    "🎯",
+    "✨",
+  ];
 
-  emojis.forEach(emoji => {
-    const emojiElement = document.createElement('span');
-    emojiElement.className = 'emoji';
+  emojis.forEach((emoji) => {
+    const emojiElement = document.createElement("span");
+    emojiElement.className = "emoji";
     emojiElement.textContent = emoji;
-    emojiElement.addEventListener('click', () => {
+    emojiElement.addEventListener("click", () => {
       messageInput.value += emoji;
       messageInput.focus();
-      emojiPicker.style.display = 'none';
+      emojiPicker.style.display = "none";
     });
     emojiPicker.appendChild(emojiElement);
   });
 
-  document.querySelector('.input-row').insertBefore(emojiButton, messageInput);
-  document.querySelector('.input-container').appendChild(emojiPicker);
+  document.querySelector(".input-row").insertBefore(emojiButton, messageInput);
+  document.querySelector(".input-container").appendChild(emojiPicker);
 
-  emojiButton.addEventListener('click', (e) => {
+  emojiButton.addEventListener("click", (e) => {
     e.preventDefault();
-    if (emojiPicker.style.display === 'grid') {
-      emojiPicker.style.display = 'none';
+    if (emojiPicker.style.display === "grid") {
+      emojiPicker.style.display = "none";
     } else {
-      emojiPicker.style.display = 'grid';
+      emojiPicker.style.display = "grid";
     }
   });
 
   // Close emoji picker when clicking elsewhere
-  document.addEventListener('click', (e) => {
+  document.addEventListener("click", (e) => {
     if (!emojiButton.contains(e.target) && !emojiPicker.contains(e.target)) {
-      emojiPicker.style.display = 'none';
+      emojiPicker.style.display = "none";
     }
   });
 
@@ -192,7 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function showPopup(title, content, saveCallback) {
     popupTitle.textContent = title;
     popupBody.innerHTML = content;
-    utilityPopup.style.display = 'flex';
+    utilityPopup.style.display = "flex";
 
     // Set up the save callback
     popupSave.onclick = () => {
@@ -202,35 +225,35 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function closePopup() {
-    utilityPopup.style.display = 'none';
-    popupBody.innerHTML = '';
+    utilityPopup.style.display = "none";
+    popupBody.innerHTML = "";
     currentUtilityMode = null;
     tempAttachments = [];
   }
 
   // New chat button handler
-  newChatBtn.addEventListener('click', () => {
+  newChatBtn.addEventListener("click", () => {
     // Save current chat to history if it has messages
-    const messages = document.querySelectorAll('.message');
+    const messages = document.querySelectorAll(".message");
     if (messages.length > 0) {
       saveChatToHistory();
     }
 
     // Clear the chat interface
-    chatContainer.innerHTML = '';
+    chatContainer.innerHTML = "";
     currentAttachments = [];
-    attachmentPreview.innerHTML = '';
+    attachmentPreview.innerHTML = "";
 
     // Generate a new chat ID
     currentChatId = generateChatId();
 
     // Add welcome message
-    addMessageToChat('assistant', 'Hello! How can I help you today?');
+    addMessageToChat("assistant", "Hello! How can I help you today?");
   });
 
   // Chat history button handler
-  historyBtn.addEventListener('click', () => {
-    currentUtilityMode = 'history';
+  historyBtn.addEventListener("click", () => {
+    currentUtilityMode = "history";
 
     let historyContent = '<div class="history-list">';
 
@@ -249,16 +272,16 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
 
-    historyContent += '</div>';
+    historyContent += "</div>";
 
-    showPopup('Chat History', historyContent, null);
+    showPopup("Chat History", historyContent, null);
 
     // Add event listeners to history items
     setTimeout(() => {
-      const historyItems = document.querySelectorAll('.history-item');
-      historyItems.forEach(item => {
-        item.addEventListener('click', () => {
-          const chatId = item.getAttribute('data-chat-id');
+      const historyItems = document.querySelectorAll(".history-item");
+      historyItems.forEach((item) => {
+        item.addEventListener("click", () => {
+          const chatId = item.getAttribute("data-chat-id");
           loadChatFromHistory(chatId);
           closePopup();
         });
@@ -269,18 +292,18 @@ document.addEventListener('DOMContentLoaded', function() {
   // Function to save current chat to history
   function saveChatToHistory() {
     // Get all messages in the chat
-    const messageElements = document.querySelectorAll('.message');
+    const messageElements = document.querySelectorAll(".message");
     const messages = [];
 
-    messageElements.forEach(element => {
-      const isUser = element.classList.contains('user-message');
-      const isAssistant = element.classList.contains('assistant-message');
-      const isError = element.classList.contains('error-message');
+    messageElements.forEach((element) => {
+      const isUser = element.classList.contains("user-message");
+      const isAssistant = element.classList.contains("assistant-message");
+      const isError = element.classList.contains("error-message");
 
       if (isUser || isAssistant || isError) {
-        const role = isUser ? 'user' : isAssistant ? 'assistant' : 'system';
-        const contentElement = element.querySelector('.message-content');
-        const content = contentElement ? contentElement.innerHTML : '';
+        const role = isUser ? "user" : isAssistant ? "assistant" : "system";
+        const contentElement = element.querySelector(".message-content");
+        const content = contentElement ? contentElement.innerHTML : "";
 
         messages.push({ role, content });
       }
@@ -295,7 +318,7 @@ document.addEventListener('DOMContentLoaded', function() {
         title: chatTitle,
         messages: messages,
         timestamp: Date.now(),
-        attachments: [...currentAttachments]
+        attachments: [...currentAttachments],
       };
 
       // Add to history
@@ -313,23 +336,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Function to load a chat from history
   function loadChatFromHistory(chatId) {
-    const chat = chatHistoryList.find(c => c.id === chatId);
+    const chat = chatHistoryList.find((c) => c.id === chatId);
     if (!chat) return;
 
     // Save current chat before switching
     saveChatToHistory();
 
     // Clear current chat
-    chatContainer.innerHTML = '';
+    chatContainer.innerHTML = "";
     currentAttachments = [];
-    attachmentPreview.innerHTML = '';
+    attachmentPreview.innerHTML = "";
 
     // Set current chat ID
     currentChatId = chatId;
 
     // Load messages
-    chat.messages.forEach(msg => {
-      const role = msg.role === 'user' ? 'user' : msg.role === 'assistant' ? 'assistant' : 'error';
+    chat.messages.forEach((msg) => {
+      const role =
+        msg.role === "user"
+          ? "user"
+          : msg.role === "assistant"
+            ? "assistant"
+            : "error";
       addMessageToChat(role, msg.content, true);
     });
 
@@ -342,13 +370,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Function to update attachment preview
   function updateAttachmentPreview() {
-    attachmentPreview.innerHTML = '';
+    attachmentPreview.innerHTML = "";
 
     currentAttachments.forEach((attachment, index) => {
       if (!attachment) return;
 
-      const attachmentElement = document.createElement('div');
-      attachmentElement.className = 'attachment-item';
+      const attachmentElement = document.createElement("div");
+      attachmentElement.className = "attachment-item";
 
       attachmentElement.innerHTML = `
         <span class="file-icon">
@@ -369,35 +397,40 @@ document.addEventListener('DOMContentLoaded', function() {
       attachmentPreview.appendChild(attachmentElement);
 
       // Add click handler for removal
-      attachmentElement.querySelector('.remove-attachment').addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        removeAttachment(index, attachmentElement);
-      });
+      attachmentElement
+        .querySelector(".remove-attachment")
+        .addEventListener("click", function () {
+          const index = parseInt(this.getAttribute("data-index"));
+          removeAttachment(index, attachmentElement);
+        });
     });
   }
 
   // Function to save chat history to local storage
   function saveChatHistoryToStorage() {
     // Simplified version of chat history for storage
-    const simplifiedHistory = chatHistoryList.map(chat => ({
+    const simplifiedHistory = chatHistoryList.map((chat) => ({
       id: chat.id,
       title: chat.title,
       timestamp: chat.timestamp,
-      messageCount: chat.messages.length
+      messageCount: chat.messages.length,
     }));
 
     // Save each chat separately to avoid size limitations
-    chatHistoryList.forEach(chat => {
+    chatHistoryList.forEach((chat) => {
       localStorage.setItem(`chat_${chat.id}`, JSON.stringify(chat));
     });
 
     // Save index of chats
-    localStorage.setItem('chat_history_index', JSON.stringify(simplifiedHistory));
+    localStorage.setItem(
+      "chat_history_index",
+      JSON.stringify(simplifiedHistory),
+    );
   }
 
   // Function to load chat history from local storage
   function loadChatHistoryFromStorage() {
-    const historyIndex = localStorage.getItem('chat_history_index');
+    const historyIndex = localStorage.getItem("chat_history_index");
     if (!historyIndex) return;
 
     try {
@@ -405,24 +438,24 @@ document.addEventListener('DOMContentLoaded', function() {
       chatHistoryList = [];
 
       // Load each chat from storage
-      index.forEach(item => {
+      index.forEach((item) => {
         const chatData = localStorage.getItem(`chat_${item.id}`);
         if (chatData) {
           chatHistoryList.push(JSON.parse(chatData));
         }
       });
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      console.error("Failed to load chat history:", error);
     }
   }
 
   // Close popup handlers
-  popupClose.addEventListener('click', closePopup);
-  popupCancel.addEventListener('click', closePopup);
+  popupClose.addEventListener("click", closePopup);
+  popupCancel.addEventListener("click", closePopup);
 
   // Image Upload
-  imageUploadBtn.addEventListener('click', () => {
-    currentUtilityMode = 'image';
+  imageUploadBtn.addEventListener("click", () => {
+    currentUtilityMode = "image";
     const content = `
       <p>Upload images to include in your message.</p>
       <input type="file" id="image-file-input" accept="image/*" multiple style="display: none;">
@@ -430,15 +463,15 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="upload-preview" id="image-preview"></div>
     `;
 
-    showPopup('Image Upload', content, () => {
+    showPopup("Image Upload", content, () => {
       // Add selected images to the message
       if (tempAttachments.length > 0) {
-        tempAttachments.forEach(item => {
+        tempAttachments.forEach((item) => {
           currentAttachments.push(item);
 
           // Create preview element for the main chat
-          const attachmentElement = document.createElement('div');
-          attachmentElement.className = 'attachment-item';
+          const attachmentElement = document.createElement("div");
+          attachmentElement.className = "attachment-item";
           attachmentElement.innerHTML = `
             <span class="file-icon">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -459,38 +492,40 @@ document.addEventListener('DOMContentLoaded', function() {
           attachmentPreview.appendChild(attachmentElement);
 
           // Add click handler for removal
-          attachmentElement.querySelector('.remove-attachment').addEventListener('click', function() {
-            const index = parseInt(this.getAttribute('data-index'));
-            removeAttachment(index, attachmentElement);
-          });
+          attachmentElement
+            .querySelector(".remove-attachment")
+            .addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              removeAttachment(index, attachmentElement);
+            });
         });
       }
     });
 
     // Set up image selection after popup is shown
     setTimeout(() => {
-      const imageFileInput = document.getElementById('image-file-input');
-      const selectImagesBtn = document.getElementById('select-images-btn');
-      const imagePreview = document.getElementById('image-preview');
+      const imageFileInput = document.getElementById("image-file-input");
+      const selectImagesBtn = document.getElementById("select-images-btn");
+      const imagePreview = document.getElementById("image-preview");
 
-      selectImagesBtn.addEventListener('click', () => {
+      selectImagesBtn.addEventListener("click", () => {
         imageFileInput.click();
       });
 
-      imageFileInput.addEventListener('change', async (event) => {
+      imageFileInput.addEventListener("change", async (event) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
         // Process each file
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          if (!file.type.startsWith('image/')) continue;
+          if (!file.type.startsWith("image/")) continue;
 
           tempAttachments.push(file);
 
           // Create preview element
-          const previewElement = document.createElement('div');
-          previewElement.className = 'upload-item uploading';
+          const previewElement = document.createElement("div");
+          previewElement.className = "upload-item uploading";
 
           // Generate preview and add to container
           try {
@@ -507,12 +542,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Simulate upload progress
             setTimeout(() => {
-              previewElement.classList.remove('uploading');
-              previewElement.querySelector('.upload-progress').remove();
+              previewElement.classList.remove("uploading");
+              previewElement.querySelector(".upload-progress").remove();
 
               // Add remove button functionality
-              const removeBtn = previewElement.querySelector('.remove-btn');
-              removeBtn.addEventListener('click', () => {
+              const removeBtn = previewElement.querySelector(".remove-btn");
+              removeBtn.addEventListener("click", () => {
                 const index = tempAttachments.indexOf(file);
                 if (index > -1) {
                   tempAttachments.splice(index, 1);
@@ -521,19 +556,19 @@ document.addEventListener('DOMContentLoaded', function() {
               });
             }, 1500);
           } catch (error) {
-            console.error('Failed to process image:', error);
+            console.error("Failed to process image:", error);
           }
         }
 
         // Clear the file input
-        event.target.value = '';
+        event.target.value = "";
       });
     }, 0);
   });
 
   // File Upload
-  fileUploadBtn.addEventListener('click', () => {
-    currentUtilityMode = 'file';
+  fileUploadBtn.addEventListener("click", () => {
+    currentUtilityMode = "file";
     const content = `
       <p>Upload files to include in your message.</p>
       <input type="file" id="document-file-input" multiple style="display: none;">
@@ -541,18 +576,18 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="upload-preview" id="file-preview"></div>
     `;
 
-    showPopup('File Upload', content, () => {
+    showPopup("File Upload", content, () => {
       // Add selected files to the message
       if (tempAttachments.length > 0) {
-        tempAttachments.forEach(item => {
+        tempAttachments.forEach((item) => {
           currentAttachments.push(item);
 
           // Create preview element for the main chat
-          const attachmentElement = document.createElement('div');
-          attachmentElement.className = 'attachment-item';
+          const attachmentElement = document.createElement("div");
+          attachmentElement.className = "attachment-item";
 
           // Determine file type icon based on extension
-          const extension = item.name.split('.').pop().toLowerCase();
+          const extension = item.name.split(".").pop().toLowerCase();
 
           attachmentElement.innerHTML = `
             <span class="file-icon">
@@ -573,25 +608,27 @@ document.addEventListener('DOMContentLoaded', function() {
           attachmentPreview.appendChild(attachmentElement);
 
           // Add click handler for removal
-          attachmentElement.querySelector('.remove-attachment').addEventListener('click', function() {
-            const index = parseInt(this.getAttribute('data-index'));
-            removeAttachment(index, attachmentElement);
-          });
+          attachmentElement
+            .querySelector(".remove-attachment")
+            .addEventListener("click", function () {
+              const index = parseInt(this.getAttribute("data-index"));
+              removeAttachment(index, attachmentElement);
+            });
         });
       }
     });
 
     // Set up file selection after popup is shown
     setTimeout(() => {
-      const documentFileInput = document.getElementById('document-file-input');
-      const selectFilesBtn = document.getElementById('select-files-btn');
-      const filePreview = document.getElementById('file-preview');
+      const documentFileInput = document.getElementById("document-file-input");
+      const selectFilesBtn = document.getElementById("select-files-btn");
+      const filePreview = document.getElementById("file-preview");
 
-      selectFilesBtn.addEventListener('click', () => {
+      selectFilesBtn.addEventListener("click", () => {
         documentFileInput.click();
       });
 
-      documentFileInput.addEventListener('change', async (event) => {
+      documentFileInput.addEventListener("change", async (event) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
@@ -601,14 +638,14 @@ document.addEventListener('DOMContentLoaded', function() {
           tempAttachments.push(file);
 
           // Create preview element
-          const previewElement = document.createElement('div');
-          previewElement.className = 'upload-item uploading';
-          previewElement.style.display = 'flex';
-          previewElement.style.alignItems = 'center';
-          previewElement.style.padding = '10px';
+          const previewElement = document.createElement("div");
+          previewElement.className = "upload-item uploading";
+          previewElement.style.display = "flex";
+          previewElement.style.alignItems = "center";
+          previewElement.style.padding = "10px";
 
           // Get file extension
-          const extension = file.name.split('.').pop().toLowerCase();
+          const extension = file.name.split(".").pop().toLowerCase();
 
           previewElement.innerHTML = `
             <div style="flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
@@ -625,12 +662,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
           // Simulate upload progress
           setTimeout(() => {
-            previewElement.classList.remove('uploading');
-            previewElement.querySelector('.upload-progress').remove();
+            previewElement.classList.remove("uploading");
+            previewElement.querySelector(".upload-progress").remove();
 
             // Add remove button functionality
-            const removeBtn = previewElement.querySelector('.remove-btn');
-            removeBtn.addEventListener('click', () => {
+            const removeBtn = previewElement.querySelector(".remove-btn");
+            removeBtn.addEventListener("click", () => {
               const index = tempAttachments.indexOf(file);
               if (index > -1) {
                 tempAttachments.splice(index, 1);
@@ -641,14 +678,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         // Clear the file input
-        event.target.value = '';
+        event.target.value = "";
       });
     }, 0);
   });
 
   // Code Editor
-  codeBtn.addEventListener('click', () => {
-    currentUtilityMode = 'code';
+  codeBtn.addEventListener("click", () => {
+    currentUtilityMode = "code";
     const content = `
       <div class="code-editor-container">
         <div class="code-language" id="code-language">Language: Auto-detect</div>
@@ -656,10 +693,10 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
 
-    showPopup('Code Editor', content, () => {
-      const codeEditor = document.getElementById('code-editor');
+    showPopup("Code Editor", content, () => {
+      const codeEditor = document.getElementById("code-editor");
       const code = codeEditor.value.trim();
-      const codeLanguageDiv = document.getElementById('code-language');
+      const codeLanguageDiv = document.getElementById("code-language");
 
       if (code) {
         // Detect language
@@ -679,22 +716,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set up real-time language detection
     setTimeout(() => {
-      const codeEditor = document.getElementById('code-editor');
-      const codeLanguageDiv = document.getElementById('code-language');
+      const codeEditor = document.getElementById("code-editor");
+      const codeLanguageDiv = document.getElementById("code-language");
 
-      codeEditor.addEventListener('input', () => {
+      codeEditor.addEventListener("input", () => {
         const code = codeEditor.value.trim();
         if (code.length > 10) {
           const language = detectCodeLanguage(code);
-          codeLanguageDiv.textContent = `Language: ${language || 'Auto-detect'}`;
+          codeLanguageDiv.textContent = `Language: ${language || "Auto-detect"}`;
         }
       });
     }, 0);
   });
 
   // Web Search
-  websearchBtn.addEventListener('click', () => {
-    currentUtilityMode = 'websearch';
+  websearchBtn.addEventListener("click", () => {
+    currentUtilityMode = "websearch";
     const content = `
       <p>Enter a URL to search or analyze:</p>
       <input type="text" id="url-input" class="websearch-input" placeholder="https://example.com">
@@ -707,8 +744,8 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
 
-    showPopup('Web Search', content, () => {
-      const urlInput = document.getElementById('url-input');
+    showPopup("Web Search", content, () => {
+      const urlInput = document.getElementById("url-input");
       const url = urlInput.value.trim();
 
       if (url) {
@@ -723,42 +760,42 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Set up URL loading functionality
     setTimeout(() => {
-      const urlInput = document.getElementById('url-input');
-      const loadUrlBtn = document.getElementById('load-url-btn');
-      const urlPreview = document.getElementById('url-preview');
-      const urlActions = document.getElementById('url-actions');
+      const urlInput = document.getElementById("url-input");
+      const loadUrlBtn = document.getElementById("load-url-btn");
+      const urlPreview = document.getElementById("url-preview");
+      const urlActions = document.getElementById("url-actions");
       let scrapeBtn, readBtn, searchBtn;
 
       // Only try to access these elements if they exist
       if (urlActions) {
-        scrapeBtn = document.getElementById('scrape-btn');
-        readBtn = document.getElementById('read-btn');
-        searchBtn = document.getElementById('search-btn');
+        scrapeBtn = document.getElementById("scrape-btn");
+        readBtn = document.getElementById("read-btn");
+        searchBtn = document.getElementById("search-btn");
       }
 
       // Allow Enter key to trigger URL loading
-      urlInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
+      urlInput.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") {
           loadUrlBtn.click();
         }
       });
 
-      loadUrlBtn.addEventListener('click', () => {
+      loadUrlBtn.addEventListener("click", () => {
         let url = urlInput.value.trim();
 
         if (!url) {
-          alert('Please enter a valid URL');
+          alert("Please enter a valid URL");
           return;
         }
 
         // Add http:// if missing
         if (!/^https?:\/\//i.test(url)) {
-          url = 'https://' + url;
+          url = "https://" + url;
           urlInput.value = url;
         }
 
         // Show loading in preview
-        urlPreview.style.display = 'block';
+        urlPreview.style.display = "block";
         urlPreview.innerHTML = `
           <div style="padding: 20px; text-align: center;">
             <div class="upload-spinner" style="margin: 0 auto;"></div>
@@ -786,20 +823,20 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             </div>
           `;
-          urlActions.style.display = 'flex';
+          urlActions.style.display = "flex";
 
           // Set up action buttons with more descriptive prompts
-          scrapeBtn.addEventListener('click', () => {
+          scrapeBtn.addEventListener("click", () => {
             messageInput.value = `Please extract and organize the main content from this URL: ${url}`;
             closePopup();
           });
 
-          readBtn.addEventListener('click', () => {
+          readBtn.addEventListener("click", () => {
             messageInput.value = `Please read and provide a comprehensive summary of this URL: ${url}. What are the key points and insights?`;
             closePopup();
           });
 
-          searchBtn.addEventListener('click', () => {
+          searchBtn.addEventListener("click", () => {
             messageInput.value = `Using this URL as context (${url}), please help me understand `;
             closePopup();
             messageInput.focus();
@@ -813,16 +850,16 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   // Deep Think
-  deepthinkBtn.addEventListener('click', () => {
+  deepthinkBtn.addEventListener("click", () => {
     // If already active, deactivate
     if (activeDeepThinkModel) {
       activeDeepThinkModel = null;
-      deepthinkBtn.classList.remove('active');
-      activeModelIndicator.textContent = '';
+      deepthinkBtn.classList.remove("active");
+      activeModelIndicator.textContent = "";
       return;
     }
 
-    currentUtilityMode = 'deepthink';
+    currentUtilityMode = "deepthink";
     const content = `
       <p>Select a reasoning model to enhance your chat experience:</p>
       <select id="reasoning-model" class="model-select">
@@ -836,39 +873,39 @@ document.addEventListener('DOMContentLoaded', function() {
       <p class="description" id="model-description"></p>
     `;
 
-    showPopup('Deep Think', content, () => {
-      const reasoningModel = document.getElementById('reasoning-model');
+    showPopup("Deep Think", content, () => {
+      const reasoningModel = document.getElementById("reasoning-model");
       const selectedModel = reasoningModel.value;
 
       if (selectedModel) {
         activeDeepThinkModel = selectedModel;
-        deepthinkBtn.classList.add('active');
+        deepthinkBtn.classList.add("active");
         activeModelIndicator.textContent = `Active: ${getModelDisplayName(selectedModel)}`;
       }
     });
 
     // Set up model description updates
     setTimeout(() => {
-      const reasoningModel = document.getElementById('reasoning-model');
-      const modelDescription = document.getElementById('model-description');
+      const reasoningModel = document.getElementById("reasoning-model");
+      const modelDescription = document.getElementById("model-description");
 
-      reasoningModel.addEventListener('change', () => {
+      reasoningModel.addEventListener("change", () => {
         const selectedModel = reasoningModel.value;
         if (selectedModel) {
           modelDescription.textContent = getModelDescription(selectedModel);
         } else {
-          modelDescription.textContent = '';
+          modelDescription.textContent = "";
         }
       });
     }, 0);
   });
 
   // Knowledge Base
-  knowledgebaseBtn.addEventListener('click', () => {
-    currentUtilityMode = 'knowledgebase';
+  knowledgebaseBtn.addEventListener("click", () => {
+    currentUtilityMode = "knowledgebase";
 
     // Create knowledge base list HTML
-    let kbListHTML = '<p>No knowledge base items yet.</p>';
+    let kbListHTML = "<p>No knowledge base items yet.</p>";
     if (knowledgeBase.length > 0) {
       kbListHTML = '<div class="kb-list">';
       knowledgeBase.forEach((item, index) => {
@@ -892,7 +929,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         `;
       });
-      kbListHTML += '</div>';
+      kbListHTML += "</div>";
     }
 
     const content = `
@@ -906,23 +943,23 @@ document.addEventListener('DOMContentLoaded', function() {
       <input type="file" id="kb-file-input" accept=".txt,.md,.json,.csv" style="display: none;">
     `;
 
-    showPopup('Knowledge Base', content, () => {
+    showPopup("Knowledge Base", content, () => {
       // Nothing needed here, actions handled by specific buttons
     });
 
     // Set up knowledge base functionality
     setTimeout(() => {
-      const kbUploadBtn = document.getElementById('kb-upload-btn');
-      const kbCreateBtn = document.getElementById('kb-create-btn');
-      const kbFileInput = document.getElementById('kb-file-input');
-      const kbContent = document.getElementById('kb-content');
+      const kbUploadBtn = document.getElementById("kb-upload-btn");
+      const kbCreateBtn = document.getElementById("kb-create-btn");
+      const kbFileInput = document.getElementById("kb-file-input");
+      const kbContent = document.getElementById("kb-content");
 
       // Upload file
-      kbUploadBtn.addEventListener('click', () => {
+      kbUploadBtn.addEventListener("click", () => {
         kbFileInput.click();
       });
 
-      kbFileInput.addEventListener('change', async (event) => {
+      kbFileInput.addEventListener("change", async (event) => {
         const files = event.target.files;
         if (!files || files.length === 0) return;
 
@@ -933,21 +970,21 @@ document.addEventListener('DOMContentLoaded', function() {
           knowledgeBase.push({
             title: file.name,
             content: content,
-            type: 'file'
+            type: "file",
           });
 
           // Update UI
           refreshKnowledgeBaseList();
         } catch (error) {
-          console.error('Failed to read file:', error);
+          console.error("Failed to read file:", error);
         }
 
         // Clear the file input
-        event.target.value = '';
+        event.target.value = "";
       });
 
       // Create new
-      kbCreateBtn.addEventListener('click', () => {
+      kbCreateBtn.addEventListener("click", () => {
         kbContent.innerHTML = `
           <div class="kb-editor">
             <input type="text" id="kb-title" placeholder="Title">
@@ -957,20 +994,20 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         `;
 
-        const kbSaveFileBtn = document.getElementById('kb-save-file-btn');
-        const kbCancelBtn = document.getElementById('kb-cancel-btn');
-        const kbTitle = document.getElementById('kb-title');
-        const kbText = document.getElementById('kb-text');
+        const kbSaveFileBtn = document.getElementById("kb-save-file-btn");
+        const kbCancelBtn = document.getElementById("kb-cancel-btn");
+        const kbTitle = document.getElementById("kb-title");
+        const kbText = document.getElementById("kb-text");
 
-        kbSaveFileBtn.addEventListener('click', () => {
-          const title = kbTitle.value.trim() || 'Untitled';
+        kbSaveFileBtn.addEventListener("click", () => {
+          const title = kbTitle.value.trim() || "Untitled";
           const content = kbText.value.trim();
 
           if (content) {
             knowledgeBase.push({
               title: title,
               content: content,
-              type: 'manual'
+              type: "manual",
             });
 
             // Update UI
@@ -978,16 +1015,16 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
 
-        kbCancelBtn.addEventListener('click', () => {
+        kbCancelBtn.addEventListener("click", () => {
           refreshKnowledgeBaseList();
         });
       });
 
       // View and delete setup
-      document.addEventListener('click', (e) => {
-        if (e.target.closest('.kb-view-btn')) {
-          const button = e.target.closest('.kb-view-btn');
-          const index = button.getAttribute('data-index');
+      document.addEventListener("click", (e) => {
+        if (e.target.closest(".kb-view-btn")) {
+          const button = e.target.closest(".kb-view-btn");
+          const index = button.getAttribute("data-index");
           const item = knowledgeBase[index];
 
           if (item) {
@@ -997,15 +1034,19 @@ document.addEventListener('DOMContentLoaded', function() {
               <button id="kb-back-btn" class="popup-btn" style="margin-top: 10px;">Back</button>
             `;
 
-            document.getElementById('kb-back-btn').addEventListener('click', () => {
-              refreshKnowledgeBaseList();
-            });
+            document
+              .getElementById("kb-back-btn")
+              .addEventListener("click", () => {
+                refreshKnowledgeBaseList();
+              });
           }
-        } else if (e.target.closest('.kb-delete-btn')) {
-          const button = e.target.closest('.kb-delete-btn');
-          const index = button.getAttribute('data-index');
+        } else if (e.target.closest(".kb-delete-btn")) {
+          const button = e.target.closest(".kb-delete-btn");
+          const index = button.getAttribute("data-index");
 
-          if (confirm('Are you sure you want to delete this knowledge base item?')) {
+          if (
+            confirm("Are you sure you want to delete this knowledge base item?")
+          ) {
             knowledgeBase.splice(index, 1);
             refreshKnowledgeBaseList();
           }
@@ -1015,7 +1056,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Helper function to refresh knowledge base list
       function refreshKnowledgeBaseList() {
         // Create knowledge base list HTML
-        let kbListHTML = '<p>No knowledge base items yet.</p>';
+        let kbListHTML = "<p>No knowledge base items yet.</p>";
         if (knowledgeBase.length > 0) {
           kbListHTML = '<div class="kb-list">';
           knowledgeBase.forEach((item, index) => {
@@ -1039,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', function() {
               </div>
             `;
           });
-          kbListHTML += '</div>';
+          kbListHTML += "</div>";
         }
 
         kbContent.innerHTML = `
@@ -1051,12 +1092,16 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
 
         // Reattach event listeners
-        document.getElementById('kb-upload-btn').addEventListener('click', () => {
-          kbFileInput.click();
-        });
+        document
+          .getElementById("kb-upload-btn")
+          .addEventListener("click", () => {
+            kbFileInput.click();
+          });
 
-        document.getElementById('kb-create-btn').addEventListener('click', () => {
-          kbContent.innerHTML = `
+        document
+          .getElementById("kb-create-btn")
+          .addEventListener("click", () => {
+            kbContent.innerHTML = `
             <div class="kb-editor">
               <input type="text" id="kb-title" placeholder="Title">
               <textarea id="kb-text" placeholder="Enter your knowledge base content here..."></textarea>
@@ -1065,33 +1110,39 @@ document.addEventListener('DOMContentLoaded', function() {
             </div>
           `;
 
-          document.getElementById('kb-save-file-btn').addEventListener('click', () => {
-            const title = document.getElementById('kb-title').value.trim() || 'Untitled';
-            const content = document.getElementById('kb-text').value.trim();
+            document
+              .getElementById("kb-save-file-btn")
+              .addEventListener("click", () => {
+                const title =
+                  document.getElementById("kb-title").value.trim() ||
+                  "Untitled";
+                const content = document.getElementById("kb-text").value.trim();
 
-            if (content) {
-              knowledgeBase.push({
-                title: title,
-                content: content,
-                type: 'manual'
+                if (content) {
+                  knowledgeBase.push({
+                    title: title,
+                    content: content,
+                    type: "manual",
+                  });
+
+                  // Update UI
+                  refreshKnowledgeBaseList();
+                }
               });
 
-              // Update UI
-              refreshKnowledgeBaseList();
-            }
+            document
+              .getElementById("kb-cancel-btn")
+              .addEventListener("click", () => {
+                refreshKnowledgeBaseList();
+              });
           });
-
-          document.getElementById('kb-cancel-btn').addEventListener('click', () => {
-            refreshKnowledgeBaseList();
-          });
-        });
       }
     }, 0);
   });
 
   // Settings
-  settingsBtn.addEventListener('click', () => {
-    currentUtilityMode = 'settings';
+  settingsBtn.addEventListener("click", () => {
+    currentUtilityMode = "settings";
     const content = `
       <div class="settings-tabs">
         <div class="settings-tab active" data-tab="app-ui">App UI</div>
@@ -1108,7 +1159,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <div class="setting-group">
             <label for="theme-toggle">Dark Mode:</label>
             <label class="toggle">
-              <input type="checkbox" id="settings-theme-toggle" ${document.body.classList.contains('dark-theme') ? 'checked' : ''}>
+              <input type="checkbox" id="settings-theme-toggle" ${document.body.classList.contains("dark-theme") ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1125,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="compact-mode">Compact Mode:</label>
           <div class="setting-group">
             <label class="toggle">
-              <input type="checkbox" id="compact-mode-toggle" ${localStorage.getItem('compact-mode') === 'true' ? 'checked' : ''}>
+              <input type="checkbox" id="compact-mode-toggle" ${localStorage.getItem("compact-mode") === "true" ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1134,7 +1185,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="notification-sounds">Notification Sounds:</label>
           <div class="setting-group">
             <label class="toggle">
-              <input type="checkbox" id="notification-sounds-toggle" ${localStorage.getItem('notification-sounds') !== 'false' ? 'checked' : ''}>
+              <input type="checkbox" id="notification-sounds-toggle" ${localStorage.getItem("notification-sounds") !== "false" ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1143,7 +1194,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="auto-save-chats">Auto-save Chats:</label>
           <div class="setting-group">
             <label class="toggle">
-              <input type="checkbox" id="auto-save-chats-toggle" ${localStorage.getItem('auto-save-chats') !== 'false' ? 'checked' : ''}>
+              <input type="checkbox" id="auto-save-chats-toggle" ${localStorage.getItem("auto-save-chats") !== "false" ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1158,11 +1209,11 @@ document.addEventListener('DOMContentLoaded', function() {
         <div class="settings-row">
           <label for="default-model">Default AI Model:</label>
           <select id="default-model-selector" class="settings-select">
-            <option value="gpt-4o-mini" ${localStorage.getItem('default-model') === 'gpt-4o-mini' || !localStorage.getItem('default-model') ? 'selected' : ''}>GPT-4o Mini (Default)</option>
-            <option value="gpt-4o" ${localStorage.getItem('default-model') === 'gpt-4o' ? 'selected' : ''}>GPT-4o</option>
-            <option value="claude-3-7-sonnet" ${localStorage.getItem('default-model') === 'claude-3-7-sonnet' ? 'selected' : ''}>Claude 3.7 Sonnet</option>
-            <option value="deepseek-chat" ${localStorage.getItem('default-model') === 'deepseek-chat' ? 'selected' : ''}>DeepSeek Chat</option>
-            <option value="gemini-2.0-flash" ${localStorage.getItem('default-model') === 'gemini-2.0-flash' ? 'selected' : ''}>Gemini 2.0 Flash</option>
+            <option value="gpt-4o-mini" ${localStorage.getItem("default-model") === "gpt-4o-mini" || !localStorage.getItem("default-model") ? "selected" : ""}>GPT-4o Mini (Default)</option>
+            <option value="gpt-4o" ${localStorage.getItem("default-model") === "gpt-4o" ? "selected" : ""}>GPT-4o</option>
+            <option value="claude-3-7-sonnet" ${localStorage.getItem("default-model") === "claude-3-7-sonnet" ? "selected" : ""}>Claude 3.7 Sonnet</option>
+            <option value="deepseek-chat" ${localStorage.getItem("default-model") === "deepseek-chat" ? "selected" : ""}>DeepSeek Chat</option>
+            <option value="gemini-2.0-flash" ${localStorage.getItem("default-model") === "gemini-2.0-flash" ? "selected" : ""}>Gemini 2.0 Flash</option>
           </select>
         </div>
 
@@ -1170,7 +1221,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="stream-toggle">Stream Response:</label>
           <div class="setting-group">
             <label class="toggle">
-              <input type="checkbox" id="settings-stream-toggle" ${document.getElementById('stream-toggle').checked ? 'checked' : ''}>
+              <input type="checkbox" id="settings-stream-toggle" ${document.getElementById("stream-toggle").checked ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1193,8 +1244,8 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="info-icon" title="Controls randomness. Lower values produce more focused responses, higher values produce more creative ones.">ⓘ</span>
             </div>
             <div class="slider-container">
-              <input type="range" id="temperature-slider" min="0" max="2" step="0.1" value="${localStorage.getItem('temperature') || '0.7'}">
-              <span class="slider-value" id="temperature-value">${localStorage.getItem('temperature') || '0.7'}</span>
+              <input type="range" id="temperature-slider" min="0" max="2" step="0.1" value="${localStorage.getItem("temperature") || "0.7"}">
+              <span class="slider-value" id="temperature-value">${localStorage.getItem("temperature") || "0.7"}</span>
             </div>
           </div>
 
@@ -1204,8 +1255,8 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="info-icon" title="Maximum length of the AI's response.">ⓘ</span>
             </div>
             <div class="slider-container">
-              <input type="range" id="max-tokens-slider" min="256" max="4096" step="256" value="${localStorage.getItem('max-tokens') || '2048'}">
-              <span class="slider-value" id="max-tokens-value">${localStorage.getItem('max-tokens') || '2048'}</span>
+              <input type="range" id="max-tokens-slider" min="256" max="4096" step="256" value="${localStorage.getItem("max-tokens") || "2048"}">
+              <span class="slider-value" id="max-tokens-value">${localStorage.getItem("max-tokens") || "2048"}</span>
             </div>
           </div>
 
@@ -1215,8 +1266,8 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="info-icon" title="Controls diversity. Lower values make output more focused, higher values more diverse.">ⓘ</span>
             </div>
             <div class="slider-container">
-              <input type="range" id="top-p-slider" min="0" max="1" step="0.05" value="${localStorage.getItem('top-p') || '0.9'}">
-              <span class="slider-value" id="top-p-value">${localStorage.getItem('top-p') || '0.9'}</span>
+              <input type="range" id="top-p-slider" min="0" max="1" step="0.05" value="${localStorage.getItem("top-p") || "0.9"}">
+              <span class="slider-value" id="top-p-value">${localStorage.getItem("top-p") || "0.9"}</span>
             </div>
           </div>
           <div class="slider-setting">
@@ -1225,8 +1276,8 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="info-icon" title="Reduces repetition by penalizing tokens that appear frequently.">ⓘ</span>
             </div>
             <div class="slider-container">
-              <input type="range" id="frequency-penalty-slider" min="0" max="2" step="0.1" value="${localStorage.getItem('frequency-penalty') || '0.0'}">
-              <span class="slider-value" id="frequency-penalty-value">${localStorage.getItem('frequency-penalty') || '0.0'}</span>
+              <input type="range" id="frequency-penalty-slider" min="0" max="2" step="0.1" value="${localStorage.getItem("frequency-penalty") || "0.0"}">
+              <span class="slider-value" id="frequency-penalty-value">${localStorage.getItem("frequency-penalty") || "0.0"}</span>
             </div>
           </div>
 
@@ -1236,8 +1287,8 @@ document.addEventListener('DOMContentLoaded', function() {
               <span class="info-icon" title="Encourages variety by penalizing tokens already used.">ⓘ</span>
             </div>
             <div class="slider-container">
-              <input type="range" id="presence-penalty-slider" min="0" max="2" step="0.1" value="${localStorage.getItem('presence-penalty') || '0.0'}">
-              <span class="slider-value" id="presence-penalty-value">${localStorage.getItem('presence-penalty') || '0.0'}</span>
+              <input type="range" id="presence-penalty-slider" min="0" max="2" step="0.1" value="${localStorage.getItem("presence-penalty") || "0.0"}">
+              <span class="slider-value" id="presence-penalty-value">${localStorage.getItem("presence-penalty") || "0.0"}</span>
             </div>
           </div>
         </div>
@@ -1250,7 +1301,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <label for="high-contrast-mode">High Contrast Mode:</label>
             <div class="setting-group">
               <label class="toggle">
-                <input type="checkbox" id="high-contrast-toggle" ${localStorage.getItem('high-contrast') === 'true' ? 'checked' : ''}>
+                <input type="checkbox" id="high-contrast-toggle" ${localStorage.getItem("high-contrast") === "true" ? "checked" : ""}>
                 <span class="slider"></span>
               </label>
             </div>
@@ -1260,7 +1311,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <label for="reduced-motion">Reduced Motion:</label>
             <div class="setting-group">
               <label class="toggle">
-                <input type="checkbox" id="reduced-motion-toggle" ${localStorage.getItem('reduced-motion') === 'true' ? 'checked' : ''}>
+                <input type="checkbox" id="reduced-motion-toggle" ${localStorage.getItem("reduced-motion") === "true" ? "checked" : ""}>
                 <span class="slider"></span>
               </label>
             </div>
@@ -1272,15 +1323,15 @@ document.addEventListener('DOMContentLoaded', function() {
               <div class="settings-row">
                 <label for="tts-rate">Speech Rate:</label>
                 <div class="slider-container">
-                  <input type="range" id="tts-rate-slider" min="0.5" max="2" step="0.1" value="${localStorage.getItem('tts-rate') || '1'}">
-                  <span class="slider-value" id="tts-rate-value">${localStorage.getItem('tts-rate') || '1'}</span>
+                  <input type="range" id="tts-rate-slider" min="0.5" max="2" step="0.1" value="${localStorage.getItem("tts-rate") || "1"}">
+                  <span class="slider-value" id="tts-rate-value">${localStorage.getItem("tts-rate") || "1"}</span>
                 </div>
               </div>
               <div class="settings-row">
                 <label for="tts-pitch">Speech Pitch:</label>
                 <div class="slider-container">
-                  <input type="range" id="tts-pitch-slider" min="0.5" max="2" step="0.1" value="${localStorage.getItem('tts-pitch') || '1'}">
-                  <span class="slider-value" id="tts-pitch-value">${localStorage.getItem('tts-pitch') || '1'}</span>
+                  <input type="range" id="tts-pitch-slider" min="0.5" max="2" step="0.1" value="${localStorage.getItem("tts-pitch") || "1"}">
+                  <span class="slider-value" id="tts-pitch-value">${localStorage.getItem("tts-pitch") || "1"}</span>
                 </div>
               </div>
             </div>
@@ -1299,7 +1350,7 @@ document.addEventListener('DOMContentLoaded', function() {
           <label for="auto-delete-history">Auto-delete History:</label>
           <div class="setting-group">
             <label class="toggle">
-              <input type="checkbox" id="auto-delete-history-toggle" ${localStorage.getItem('auto-delete-history') === 'true' ? 'checked' : ''}>
+              <input type="checkbox" id="auto-delete-history-toggle" ${localStorage.getItem("auto-delete-history") === "true" ? "checked" : ""}>
               <span class="slider"></span>
             </label>
           </div>
@@ -1314,62 +1365,72 @@ document.addEventListener('DOMContentLoaded', function() {
       </div>
     `;
 
-    showPopup('Settings', content, () => {
+    showPopup("Settings", content, () => {
       // Save settings
-      const themeToggle = document.getElementById('settings-theme-toggle');
-      const textSize = document.getElementById('text-size-value');
-      const compactMode = document.getElementById('compact-mode-toggle');
-      const notificationSounds = document.getElementById('notification-sounds-toggle');
-      const defaultModel = document.getElementById('default-model-selector');
-      const systemPrompt = document.getElementById('system-prompt');
-      const settingsStreamToggle = document.getElementById('settings-stream-toggle');
-      const temperatureSlider = document.getElementById('temperature-slider');
-      const maxTokensSlider = document.getElementById('max-tokens-slider');
-      const topPSlider = document.getElementById('top-p-slider');
-      const frequencyPenaltySlider = document.getElementById('frequency-penalty-slider');
-      const presencePenaltySlider = document.getElementById('presence-penalty-slider');
-      const autoDeleteHistoryToggle = document.getElementById('auto-delete-history-toggle');
+      const themeToggle = document.getElementById("settings-theme-toggle");
+      const textSize = document.getElementById("text-size-value");
+      const compactMode = document.getElementById("compact-mode-toggle");
+      const notificationSounds = document.getElementById(
+        "notification-sounds-toggle",
+      );
+      const defaultModel = document.getElementById("default-model-selector");
+      const systemPrompt = document.getElementById("system-prompt");
+      const settingsStreamToggle = document.getElementById(
+        "settings-stream-toggle",
+      );
+      const temperatureSlider = document.getElementById("temperature-slider");
+      const maxTokensSlider = document.getElementById("max-tokens-slider");
+      const topPSlider = document.getElementById("top-p-slider");
+      const frequencyPenaltySlider = document.getElementById(
+        "frequency-penalty-slider",
+      );
+      const presencePenaltySlider = document.getElementById(
+        "presence-penalty-slider",
+      );
+      const autoDeleteHistoryToggle = document.getElementById(
+        "auto-delete-history-toggle",
+      );
 
       // Sync stream toggle with main UI if it exists
-      const mainStreamToggle = document.getElementById('stream-toggle');
+      const mainStreamToggle = document.getElementById("stream-toggle");
       if (mainStreamToggle && settingsStreamToggle) {
         mainStreamToggle.checked = settingsStreamToggle.checked;
       }
 
       // Apply theme
       if (themeToggle.checked) {
-        document.body.classList.add('dark-theme');
-        localStorage.setItem('theme', 'dark');
+        document.body.classList.add("dark-theme");
+        localStorage.setItem("theme", "dark");
 
         // If using dark theme, enable dark code theme
-        document.getElementById('prism-theme-dark').disabled = false;
+        document.getElementById("prism-theme-dark").disabled = false;
       } else {
-        document.body.classList.remove('dark-theme');
-        localStorage.setItem('theme', 'light');
+        document.body.classList.remove("dark-theme");
+        localStorage.setItem("theme", "light");
 
         // If using light theme, disable dark code theme
-        document.getElementById('prism-theme-dark').disabled = true;
+        document.getElementById("prism-theme-dark").disabled = true;
       }
 
       // Apply text size
-      const fontSize = textSize.value + 'px';
-      document.documentElement.style.setProperty('--text-size', fontSize);
-      localStorage.setItem('text-size', textSize.value);
+      const fontSize = textSize.value + "px";
+      document.documentElement.style.setProperty("--text-size", fontSize);
+      localStorage.setItem("text-size", textSize.value);
 
       // Apply compact mode
       if (compactMode.checked) {
-        document.body.classList.add('compact-mode');
-        localStorage.setItem('compact-mode', 'true');
+        document.body.classList.add("compact-mode");
+        localStorage.setItem("compact-mode", "true");
       } else {
-        document.body.classList.remove('compact-mode');
-        localStorage.setItem('compact-mode', 'false');
+        document.body.classList.remove("compact-mode");
+        localStorage.setItem("compact-mode", "false");
       }
 
       // Apply notification sounds setting
-      localStorage.setItem('notification-sounds', notificationSounds.checked);
+      localStorage.setItem("notification-sounds", notificationSounds.checked);
 
       // Apply default model
-      localStorage.setItem('default-model', defaultModel.value);
+      localStorage.setItem("default-model", defaultModel.value);
 
       // If the default model changed, update the model selector
       if (modelSelector.value !== defaultModel.value) {
@@ -1377,133 +1438,166 @@ document.addEventListener('DOMContentLoaded', function() {
       }
 
       // Save system prompt
-      localStorage.setItem('system-prompt', systemPrompt.value);
+      localStorage.setItem("system-prompt", systemPrompt.value);
 
       // Save advanced AI parameters
-      localStorage.setItem('temperature', temperatureSlider.value);
-      localStorage.setItem('max-tokens', maxTokensSlider.value);
-      localStorage.setItem('top-p', topPSlider.value);
-      localStorage.setItem('frequency-penalty', frequencyPenaltySlider.value);
-      localStorage.setItem('presence-penalty', presencePenaltySlider.value);
-      localStorage.setItem('auto-delete-history', autoDeleteHistoryToggle.checked);
+      localStorage.setItem("temperature", temperatureSlider.value);
+      localStorage.setItem("max-tokens", maxTokensSlider.value);
+      localStorage.setItem("top-p", topPSlider.value);
+      localStorage.setItem("frequency-penalty", frequencyPenaltySlider.value);
+      localStorage.setItem("presence-penalty", presencePenaltySlider.value);
+      localStorage.setItem(
+        "auto-delete-history",
+        autoDeleteHistoryToggle.checked,
+      );
     });
 
     // Set up settings functionality
     setTimeout(() => {
-      const settingsTabs = document.querySelectorAll('.settings-tab');
-      const themeToggle = document.getElementById('settings-theme-toggle');
-      const textSizeValue = document.getElementById('text-size-value');
-      const textSizeDecrease = document.getElementById('text-size-decrease');
-      const textSizeIncrease = document.getElementById('text-size-increase');
-      const compactModeToggle = document.getElementById('compact-mode-toggle');
-      const notificationSoundsToggle = document.getElementById('notification-sounds-toggle');
-      const systemPrompt = document.getElementById('system-prompt');
-      const clearAllDataBtn = document.getElementById('clear-all-data-btn');
-      const temperatureSlider = document.getElementById('temperature-slider');
-      const maxTokensSlider = document.getElementById('max-tokens-slider');
-      const topPSlider = document.getElementById('top-p-slider');
-      const frequencyPenaltySlider = document.getElementById('frequency-penalty-slider');
-      const presencePenaltySlider = document.getElementById('presence-penalty-slider');
-      const temperatureValue = document.getElementById('temperature-value');
-      const maxTokensValue = document.getElementById('max-tokens-value');
-      const topPValue = document.getElementById('top-p-value');
-      const frequencyPenaltyValue = document.getElementById('frequency-penalty-value');
-      const presencePenaltyValue = document.getElementById('presence-penalty-value');
-      const autoDeleteHistoryToggle = document.getElementById('auto-delete-history-toggle');
-
+      const settingsTabs = document.querySelectorAll(".settings-tab");
+      const themeToggle = document.getElementById("settings-theme-toggle");
+      const textSizeValue = document.getElementById("text-size-value");
+      const textSizeDecrease = document.getElementById("text-size-decrease");
+      const textSizeIncrease = document.getElementById("text-size-increase");
+      const compactModeToggle = document.getElementById("compact-mode-toggle");
+      const notificationSoundsToggle = document.getElementById(
+        "notification-sounds-toggle",
+      );
+      const systemPrompt = document.getElementById("system-prompt");
+      const clearAllDataBtn = document.getElementById("clear-all-data-btn");
+      const temperatureSlider = document.getElementById("temperature-slider");
+      const maxTokensSlider = document.getElementById("max-tokens-slider");
+      const topPSlider = document.getElementById("top-p-slider");
+      const frequencyPenaltySlider = document.getElementById(
+        "frequency-penalty-slider",
+      );
+      const presencePenaltySlider = document.getElementById(
+        "presence-penalty-slider",
+      );
+      const temperatureValue = document.getElementById("temperature-value");
+      const maxTokensValue = document.getElementById("max-tokens-value");
+      const topPValue = document.getElementById("top-p-value");
+      const frequencyPenaltyValue = document.getElementById(
+        "frequency-penalty-value",
+      );
+      const presencePenaltyValue = document.getElementById(
+        "presence-penalty-value",
+      );
+      const autoDeleteHistoryToggle = document.getElementById(
+        "auto-delete-history-toggle",
+      );
 
       // Tab navigation
-      settingsTabs.forEach(tab => {
-        tab.addEventListener('click', () => {
+      settingsTabs.forEach((tab) => {
+        tab.addEventListener("click", () => {
           // Remove active class from all tabs
-          settingsTabs.forEach(t => t.classList.remove('active'));
+          settingsTabs.forEach((t) => t.classList.remove("active"));
 
           // Add active class to clicked tab
-          tab.classList.add('active');
+          tab.classList.add("active");
 
           // Hide all sections
-          document.querySelectorAll('.settings-section').forEach(section => {
-            section.classList.remove('active');
+          document.querySelectorAll(".settings-section").forEach((section) => {
+            section.classList.remove("active");
           });
 
           // Show selected section
-          const sectionId = tab.getAttribute('data-tab') + '-section';
-          document.getElementById(sectionId).classList.add('active');
+          const sectionId = tab.getAttribute("data-tab") + "-section";
+          document.getElementById(sectionId).classList.add("active");
         });
       });
 
       // Load saved settings
-      const savedTextSize = localStorage.getItem('text-size');
+      const savedTextSize = localStorage.getItem("text-size");
       if (savedTextSize) {
         textSizeValue.value = savedTextSize;
         // Apply the text size immediately to show the current value
-        document.documentElement.style.setProperty('--text-size', savedTextSize + 'px');
+        document.documentElement.style.setProperty(
+          "--text-size",
+          savedTextSize + "px",
+        );
       }
 
-      const savedSystemPrompt = localStorage.getItem('system-prompt');
+      const savedSystemPrompt = localStorage.getItem("system-prompt");
       if (savedSystemPrompt) {
         systemPrompt.value = savedSystemPrompt;
       }
 
       // Text size controls with live preview
-      textSizeDecrease.addEventListener('click', () => {
+      textSizeDecrease.addEventListener("click", () => {
         if (parseInt(textSizeValue.value) > 10) {
           textSizeValue.value = parseInt(textSizeValue.value) - 1;
           // Apply the change immediately for preview
-          document.documentElement.style.setProperty('--text-size', textSizeValue.value + 'px');
+          document.documentElement.style.setProperty(
+            "--text-size",
+            textSizeValue.value + "px",
+          );
         }
       });
 
-      textSizeIncrease.addEventListener('click', () => {
+      textSizeIncrease.addEventListener("click", () => {
         if (parseInt(textSizeValue.value) < 24) {
           textSizeValue.value = parseInt(textSizeValue.value) + 1;
           // Apply the change immediately for preview
-          document.documentElement.style.setProperty('--text-size', textSizeValue.value + 'px');
+          document.documentElement.style.setProperty(
+            "--text-size",
+            textSizeValue.value + "px",
+          );
         }
       });
 
       // Also apply text size on manual input
-      textSizeValue.addEventListener('input', () => {
+      textSizeValue.addEventListener("input", () => {
         const size = parseInt(textSizeValue.value);
         if (size >= 10 && size <= 24) {
-          document.documentElement.style.setProperty('--text-size', size + 'px');
+          document.documentElement.style.setProperty(
+            "--text-size",
+            size + "px",
+          );
         }
       });
 
       // Clear all data button
-      clearAllDataBtn.addEventListener('click', () => {
-        if (confirm('Are you sure you want to clear all chat history and settings? This action cannot be undone.')) {
+      clearAllDataBtn.addEventListener("click", () => {
+        if (
+          confirm(
+            "Are you sure you want to clear all chat history and settings? This action cannot be undone.",
+          )
+        ) {
           // Clear localStorage
           localStorage.clear();
 
           // Clear chat history from KV store
-          puter.kv.del('chat_history').then(() => {
-            alert('All data has been cleared. The page will now reload.');
-            window.location.reload();
-          }).catch(error => {
-            console.error('Failed to clear chat history:', error);
-            alert('Failed to clear chat history. Please try again.');
-          });
+          puter.kv
+            .del("chat_history")
+            .then(() => {
+              alert("All data has been cleared. The page will now reload.");
+              window.location.reload();
+            })
+            .catch((error) => {
+              console.error("Failed to clear chat history:", error);
+              alert("Failed to clear chat history. Please try again.");
+            });
         }
       });
 
       // Apply theme changes immediately for preview
-      themeToggle.addEventListener('change', () => {
+      themeToggle.addEventListener("change", () => {
         if (themeToggle.checked) {
-          document.body.classList.add('dark-theme');
-          document.getElementById('prism-theme-dark').disabled = false;
+          document.body.classList.add("dark-theme");
+          document.getElementById("prism-theme-dark").disabled = false;
         } else {
-          document.body.classList.remove('dark-theme');
-          document.getElementById('prism-theme-dark').disabled = true;
+          document.body.classList.remove("dark-theme");
+          document.getElementById("prism-theme-dark").disabled = true;
         }
       });
 
       // Apply compact mode immediately for preview
-      compactModeToggle.addEventListener('change', () => {
+      compactModeToggle.addEventListener("change", () => {
         if (compactModeToggle.checked) {
-          document.body.classList.add('compact-mode');
+          document.body.classList.add("compact-mode");
         } else {
-          document.body.classList.remove('compact-mode');
+          document.body.classList.remove("compact-mode");
         }
       });
 
@@ -1513,47 +1607,59 @@ document.addEventListener('DOMContentLoaded', function() {
         localStorage.setItem(valueElement.id, slider.value);
       }
 
-      temperatureSlider.addEventListener('input', () => updateSliderValue(temperatureSlider, temperatureValue));
-      maxTokensSlider.addEventListener('input', () => updateSliderValue(maxTokensSlider, maxTokensValue));
-      topPSlider.addEventListener('input', () => updateSliderValue(topPSlider, topPValue));
-      frequencyPenaltySlider.addEventListener('input', () => updateSliderValue(frequencyPenaltySlider, frequencyPenaltyValue));
-      presencePenaltySlider.addEventListener('input', () => updateSliderValue(presencePenaltySlider, presencePenaltyValue));
+      temperatureSlider.addEventListener("input", () =>
+        updateSliderValue(temperatureSlider, temperatureValue),
+      );
+      maxTokensSlider.addEventListener("input", () =>
+        updateSliderValue(maxTokensSlider, maxTokensValue),
+      );
+      topPSlider.addEventListener("input", () =>
+        updateSliderValue(topPSlider, topPValue),
+      );
+      frequencyPenaltySlider.addEventListener("input", () =>
+        updateSliderValue(frequencyPenaltySlider, frequencyPenaltyValue),
+      );
+      presencePenaltySlider.addEventListener("input", () =>
+        updateSliderValue(presencePenaltySlider, presencePenaltyValue),
+      );
 
       // Load saved values for advanced AI parameters
-      const savedTemperature = localStorage.getItem('temperature');
+      const savedTemperature = localStorage.getItem("temperature");
       if (savedTemperature) {
         temperatureSlider.value = savedTemperature;
         temperatureValue.textContent = savedTemperature;
       }
 
-      const savedMaxTokens = localStorage.getItem('max-tokens');
+      const savedMaxTokens = localStorage.getItem("max-tokens");
       if (savedMaxTokens) {
         maxTokensSlider.value = savedMaxTokens;
         maxTokensValue.textContent = savedMaxTokens;
       }
 
-      const savedTopP = localStorage.getItem('top-p');
+      const savedTopP = localStorage.getItem("top-p");
       if (savedTopP) {
         topPSlider.value = savedTopP;
         topPValue.textContent = savedTopP;
       }
 
-      const savedFrequencyPenalty = localStorage.getItem('frequency-penalty');
+      const savedFrequencyPenalty = localStorage.getItem("frequency-penalty");
       if (savedFrequencyPenalty) {
         frequencyPenaltySlider.value = savedFrequencyPenalty;
         frequencyPenaltyValue.textContent = savedFrequencyPenalty;
       }
 
-      const savedPresencePenalty = localStorage.getItem('presence-penalty');
+      const savedPresencePenalty = localStorage.getItem("presence-penalty");
       if (savedPresencePenalty) {
         presencePenaltySlider.value = savedPresencePenalty;
         presencePenaltyValue.textContent = savedPresencePenalty;
       }
 
       // Auto-delete history toggle
-      const savedAutoDeleteHistory = localStorage.getItem('auto-delete-history');
+      const savedAutoDeleteHistory = localStorage.getItem(
+        "auto-delete-history",
+      );
       if (savedAutoDeleteHistory) {
-        autoDeleteHistoryToggle.checked = savedAutoDeleteHistory === 'true';
+        autoDeleteHistoryToggle.checked = savedAutoDeleteHistory === "true";
       }
     }, 0);
   });
@@ -1569,74 +1675,128 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function formatFileSize(bytes) {
-    if (bytes < 1024) return bytes + ' bytes';
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    if (bytes < 1024) return bytes + " bytes";
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + " KB";
+    return (bytes / (1024 * 1024)).toFixed(1) + " MB";
   }
 
   function detectCodeLanguage(code) {
     // More comprehensive language detection based on syntax
     // Python
-    if (code.includes('import ') && (code.includes('def ') || code.includes('class ')) && code.includes(':')) return 'python';
-    if (code.match(/from\s+[\w\.]+\s+import\s+/)) return 'python';
+    if (
+      code.includes("import ") &&
+      (code.includes("def ") || code.includes("class ")) &&
+      code.includes(":")
+    )
+      return "python";
+    if (code.match(/from\s+[\w\.]+\s+import\s+/)) return "python";
 
     // JavaScript/TypeScript
-    if (code.includes('const ') && code.includes(';') && (code.includes('function') || code.includes('=>'))) return 'javascript';
-    if (code.includes('import ') && code.includes('from ') && code.includes(';')) return 'javascript';
-    if (code.includes('interface ') && code.includes('extends') && code.includes(';')) return 'typescript';
+    if (
+      code.includes("const ") &&
+      code.includes(";") &&
+      (code.includes("function") || code.includes("=>"))
+    )
+      return "javascript";
+    if (
+      code.includes("import ") &&
+      code.includes("from ") &&
+      code.includes(";")
+    )
+      return "javascript";
+    if (
+      code.includes("interface ") &&
+      code.includes("extends") &&
+      code.includes(";")
+    )
+      return "typescript";
 
     // Java
-    if (code.includes('public class ') && code.includes('void ') && code.includes(';')) return 'java';
+    if (
+      code.includes("public class ") &&
+      code.includes("void ") &&
+      code.includes(";")
+    )
+      return "java";
 
     // C/C++
-    if (code.includes('#include') && (code.includes('int main') || code.includes('void main'))) return 'cpp';
+    if (
+      code.includes("#include") &&
+      (code.includes("int main") || code.includes("void main"))
+    )
+      return "cpp";
 
     // HTML
-    if (code.includes('<!DOCTYPE html>') || code.includes('<html>') || (code.includes('<div') && code.includes('</div>'))) return 'html';
+    if (
+      code.includes("<!DOCTYPE html>") ||
+      code.includes("<html>") ||
+      (code.includes("<div") && code.includes("</div>"))
+    )
+      return "html";
 
     // CSS
-    if ((code.includes('body {') || code.includes('.class {')) && code.includes('}')) return 'css';
+    if (
+      (code.includes("body {") || code.includes(".class {")) &&
+      code.includes("}")
+    )
+      return "css";
 
     // SQL
-    if ((code.includes('SELECT ') || code.includes('select ')) &&
-        (code.includes(' FROM ') || code.includes(' from '))) return 'sql';
+    if (
+      (code.includes("SELECT ") || code.includes("select ")) &&
+      (code.includes(" FROM ") || code.includes(" from "))
+    )
+      return "sql";
 
     // PHP
-    if (code.includes('<?php') || (code.includes('function') && code.includes('$'))) return 'php';
+    if (
+      code.includes("<?php") ||
+      (code.includes("function") && code.includes("$"))
+    )
+      return "php";
 
     // Go
-    if (code.includes('package ') && code.includes('func ')) return 'go';
+    if (code.includes("package ") && code.includes("func ")) return "go";
 
     // Ruby
-    if (code.includes('def ') && code.includes('end') && !code.includes(';')) return 'ruby';
+    if (code.includes("def ") && code.includes("end") && !code.includes(";"))
+      return "ruby";
 
     // Bash/Shell
-    if (code.includes('#!/bin/') || (code.includes('if [') && code.includes('fi'))) return 'bash';
+    if (
+      code.includes("#!/bin/") ||
+      (code.includes("if [") && code.includes("fi"))
+    )
+      return "bash";
 
     // Fallback
-    return '';
+    return "";
   }
 
   function getModelDisplayName(modelId) {
     const modelNames = {
-      'deepseek-reasoner': 'DeepSeek Reasoner',
-      'o3-mini': 'O3 Mini',
-      'o1-mini': 'O1 Mini',
-      'claude-3-7-sonnet': 'Claude 3.7 Sonnet',
-      'gemini-2.0-flash': 'Gemini 2.0 Flash'
+      "deepseek-reasoner": "DeepSeek Reasoner",
+      "o3-mini": "O3 Mini",
+      "o1-mini": "O1 Mini",
+      "claude-3-7-sonnet": "Claude 3.7 Sonnet",
+      "gemini-2.0-flash": "Gemini 2.0 Flash",
     };
     return modelNames[modelId] || modelId;
   }
 
   function getModelDescription(modelId) {
     const descriptions = {
-      'deepseek-reasoner': 'Specialized for complex reasoning tasks and problem-solving.',
-      'o3-mini': 'Balanced reasoning capabilities with efficient performance.',
-      'o1-mini': 'Fast and efficient for general reasoning tasks.',
-      'claude-3-7-sonnet': 'Strong reasoning with nuanced understanding.',
-      'gemini-2.0-flash': 'Quick, efficient reasoning with Google\'s latest technology.'
+      "deepseek-reasoner":
+        "Specialized for complex reasoning tasks and problem-solving.",
+      "o3-mini": "Balanced reasoning capabilities with efficient performance.",
+      "o1-mini": "Fast and efficient for general reasoning tasks.",
+      "claude-3-7-sonnet": "Strong reasoning with nuanced understanding.",
+      "gemini-2.0-flash":
+        "Quick, efficient reasoning with Google's latest technology.",
     };
-    return descriptions[modelId] || 'Advanced reasoning model for enhanced thinking.';
+    return (
+      descriptions[modelId] || "Advanced reasoning model for enhanced thinking."
+    );
   }
 
   // Initialize chat history
@@ -1646,25 +1806,30 @@ document.addEventListener('DOMContentLoaded', function() {
   loadChatHistoryFromStorage();
 
   // Load saved theme preference or respect OS preference
-  const savedTheme = localStorage.getItem('theme');
-  const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const savedTheme = localStorage.getItem("theme");
+  const prefersDark =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  if (document.body && (savedTheme === 'dark' || (!savedTheme && prefersDark))) {
-    document.body.classList.add('dark-theme');
+  if (
+    document.body &&
+    (savedTheme === "dark" || (!savedTheme && prefersDark))
+  ) {
+    document.body.classList.add("dark-theme");
   }
 
   // Create hidden stream toggle that will be controlled from settings
-  const streamToggle = document.createElement('input');
-  streamToggle.type = 'checkbox';
-  streamToggle.id = 'stream-toggle';
+  const streamToggle = document.createElement("input");
+  streamToggle.type = "checkbox";
+  streamToggle.id = "stream-toggle";
   streamToggle.checked = true;
-  streamToggle.style.display = 'none';
+  streamToggle.style.display = "none";
   if (document.body) {
     document.body.appendChild(streamToggle);
   }
 
   // Initialize voice input
-  micButton.addEventListener('click', toggleVoiceRecording);
+  micButton.addEventListener("click", toggleVoiceRecording);
 
   function toggleVoiceRecording() {
     if (isRecording) {
@@ -1676,47 +1841,52 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function startVoiceRecording() {
     // Check if browser supports speech recognition
-    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
-      alert('Your browser does not support speech recognition.');
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      alert("Your browser does not support speech recognition.");
       return;
     }
 
     // Request microphone permission
-    navigator.mediaDevices.getUserMedia({ audio: true })
-      .then(function(stream) {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then(function (stream) {
         // Permission granted, start recording
         initiateSpeechRecognition();
-        if (stream) stream.getTracks().forEach(track => track.stop());
+        if (stream) stream.getTracks().forEach((track) => track.stop());
       })
-      .catch(function(err) {
-        alert('Microphone permission denied: ' + err.message);
+      .catch(function (err) {
+        alert("Microphone permission denied: " + err.message);
       });
   }
 
   function initiateSpeechRecognition() {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
     speechRecognition = new SpeechRecognition();
 
     speechRecognition.continuous = true;
     speechRecognition.interimResults = true;
-    speechRecognition.lang = 'en-US';
+    speechRecognition.lang = "en-US";
 
-    let finalTranscript = '';
+    let finalTranscript = "";
 
-    speechRecognition.onstart = function() {
+    speechRecognition.onstart = function () {
       isRecording = true;
-      micButton.classList.add('recording');
-      messageInput.placeholder = 'Listening...';
+      micButton.classList.add("recording");
+      messageInput.placeholder = "Listening...";
     };
 
-    speechRecognition.onresult = function(event) {
-      let interimTranscript = '';
+    speechRecognition.onresult = function (event) {
+      let interimTranscript = "";
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
 
         if (event.results[i].isFinal) {
-          finalTranscript += transcript + ' ';
+          finalTranscript += transcript + " ";
         } else {
           interimTranscript += transcript;
         }
@@ -1725,12 +1895,12 @@ document.addEventListener('DOMContentLoaded', function() {
       messageInput.value = finalTranscript + interimTranscript;
     };
 
-    speechRecognition.onerror = function(event) {
-      console.error('Speech recognition error:', event.error);
+    speechRecognition.onerror = function (event) {
+      console.error("Speech recognition error:", event.error);
       stopVoiceRecording();
     };
 
-    speechRecognition.onend = function() {
+    speechRecognition.onend = function () {
       stopVoiceRecording();
     };
 
@@ -1743,30 +1913,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     isRecording = false;
-    micButton.classList.remove('recording');
-    messageInput.placeholder = 'Type your message here...';
+    micButton.classList.remove("recording");
+    messageInput.placeholder = "Type your message here...";
   }
 
   // Initialize text-to-speech
-  ttsButton.addEventListener('click', toggleTextToSpeech);
+  ttsButton.addEventListener("click", toggleTextToSpeech);
 
   function toggleTextToSpeech() {
     isTtsEnabled = !isTtsEnabled;
 
     if (isTtsEnabled) {
-      ttsButton.classList.add('active');
-      ttsButton.title = 'Disable text-to-speech';
+      ttsButton.classList.add("active");
+      ttsButton.title = "Disable text-to-speech";
 
       // Check if TTS is supported
       if (!synthesis) {
-        alert('Your browser does not support text-to-speech.');
+        alert("Your browser does not support text-to-speech.");
         isTtsEnabled = false;
-        ttsButton.classList.remove('active');
+        ttsButton.classList.remove("active");
         return;
       }
     } else {
-      ttsButton.classList.remove('active');
-      ttsButton.title = 'Enable text-to-speech';
+      ttsButton.classList.remove("active");
+      ttsButton.title = "Enable text-to-speech";
 
       // Stop any ongoing speech
       if (synthesis) {
@@ -1775,7 +1945,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Save preference
-    localStorage.setItem('tts-enabled', isTtsEnabled ? 'true' : 'false');
+    localStorage.setItem("tts-enabled", isTtsEnabled ? "true" : "false");
   }
 
   // Function to speak text
@@ -1786,7 +1956,7 @@ document.addEventListener('DOMContentLoaded', function() {
     synthesis.cancel();
 
     // Clean text for better speech (remove markdown, code, etc.)
-    const textElement = document.createElement('div');
+    const textElement = document.createElement("div");
     textElement.innerHTML = marked.parse(text);
     const cleanText = textElement.innerText;
 
@@ -1813,10 +1983,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const chunks = [];
     const sentences = text.split(/(?<=[.!?])\s+/);
 
-    let currentChunk = '';
+    let currentChunk = "";
     for (const sentence of sentences) {
       if (currentChunk.length + sentence.length <= maxLength) {
-        currentChunk += (currentChunk ? ' ' : '') + sentence;
+        currentChunk += (currentChunk ? " " : "") + sentence;
       } else {
         if (currentChunk) {
           chunks.push(currentChunk);
@@ -1833,30 +2003,30 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Load TTS preference
-  const savedTtsPreference = localStorage.getItem('tts-enabled');
-  if (savedTtsPreference === 'true') {
+  const savedTtsPreference = localStorage.getItem("tts-enabled");
+  if (savedTtsPreference === "true") {
     isTtsEnabled = true;
-    ttsButton.classList.add('active');
-    ttsButton.title = 'Disable text-to-speech';
+    ttsButton.classList.add("active");
+    ttsButton.title = "Disable text-to-speech";
   }
 
   // Event listeners
-  sendButton.addEventListener('click', sendMessage);
-  messageInput.addEventListener('keypress', function(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  sendButton.addEventListener("click", sendMessage);
+  messageInput.addEventListener("keypress", function (e) {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
     }
   });
-  fileInput.addEventListener('change', handleFileAttachment);
+  fileInput.addEventListener("change", handleFileAttachment);
 
   // Model selection change event
-  modelSelector.addEventListener('change', function() {
-    const imageGenOptions = document.getElementById('image-gen-options');
-    if (this.value === 'image-generator') {
-      imageGenOptions.style.display = 'block';
+  modelSelector.addEventListener("change", function () {
+    const imageGenOptions = document.getElementById("image-gen-options");
+    if (this.value === "image-generator") {
+      imageGenOptions.style.display = "block";
     } else {
-      imageGenOptions.style.display = 'none';
+      imageGenOptions.style.display = "none";
     }
   });
 
@@ -1871,8 +2041,8 @@ document.addEventListener('DOMContentLoaded', function() {
       currentAttachments.push(file);
 
       // Create preview element
-      const attachmentElement = document.createElement('div');
-      attachmentElement.className = 'attachment-item';
+      const attachmentElement = document.createElement("div");
+      attachmentElement.className = "attachment-item";
       attachmentElement.innerHTML = `
         <span class="file-icon">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1892,14 +2062,16 @@ document.addEventListener('DOMContentLoaded', function() {
       attachmentPreview.appendChild(attachmentElement);
 
       // Add click handler for removal
-      attachmentElement.querySelector('.remove-attachment').addEventListener('click', function() {
-        const index = parseInt(this.getAttribute('data-index'));
-        removeAttachment(index, attachmentElement);
-      });
+      attachmentElement
+        .querySelector(".remove-attachment")
+        .addEventListener("click", function () {
+          const index = parseInt(this.getAttribute("data-index"));
+          removeAttachment(index, attachmentElement);
+        });
     }
 
     // Clear the file input
-    event.target.value = '';
+    event.target.value = "";
   }
 
   // Remove an attachment
@@ -1914,20 +2086,20 @@ document.addEventListener('DOMContentLoaded', function() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result);
-      reader.onerror = error => reject(error);
+      reader.onerror = (error) => reject(error);
     });
   }
 
   // Format attachment for display in chat
   function formatAttachment(file, base64) {
-    if (file.type.startsWith('image/')) {
+    if (file.type.startsWith("image/")) {
       return `<div class="file-attachment image-attachment">
                 <img src="${base64}" alt="${file.name}" title="${file.name}" />
                 <div class="image-filename">${file.name}</div>
               </div>`;
     } else {
       // Determine file type icon based on extension
-      const extension = file.name.split('.').pop().toLowerCase();
+      const extension = file.name.split(".").pop().toLowerCase();
       let fileIcon = `
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
@@ -1937,25 +2109,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Different icons for common file types
       const fileTypeMap = {
-        'pdf': '#FF5252',
-        'doc': '#2196F3',
-        'docx': '#2196F3',
-        'xls': '#4CAF50',
-        'xlsx': '#4CAF50',
-        'ppt': '#FF9800',
-        'pptx': '#FF9800',
-        'zip': '#9C27B0',
-        'rar': '#9C27B0',
-        'txt': '#607D8B',
-        'csv': '#795548',
-        'json': '#FFC107',
-        'xml': '#00BCD4',
-        'html': '#E91E63',
-        'css': '#3F51B5',
-        'js': '#FFEB3B'
+        pdf: "#FF5252",
+        doc: "#2196F3",
+        docx: "#2196F3",
+        xls: "#4CAF50",
+        xlsx: "#4CAF50",
+        ppt: "#FF9800",
+        pptx: "#FF9800",
+        zip: "#9C27B0",
+        rar: "#9C27B0",
+        txt: "#607D8B",
+        csv: "#795548",
+        json: "#FFC107",
+        xml: "#00BCD4",
+        html: "#E91E63",
+        css: "#3F51B5",
+        js: "#FFEB3B",
       };
 
-      const color = fileTypeMap[extension] || '#78909C';
+      const color = fileTypeMap[extension] || "#78909C";
 
       return `<div class="file-attachment file-type-${extension}">
                 <div class="file-icon" style="color: ${color}">
@@ -1970,20 +2142,20 @@ document.addEventListener('DOMContentLoaded', function() {
   // Send message function
   async function sendMessage() {
     const userMessage = messageInput.value.trim();
-    if (userMessage === '' && currentAttachments.length === 0) return;
+    if (userMessage === "" && currentAttachments.length === 0) return;
 
     // Prepare message content with attachments
     let messageContent = userMessage;
-    let attachmentContent = '';
+    let attachmentContent = "";
 
     // Process attachments
-    const validAttachments = currentAttachments.filter(att => att !== null);
+    const validAttachments = currentAttachments.filter((att) => att !== null);
     for (let file of validAttachments) {
       try {
         const base64 = await fileToBase64(file);
         attachmentContent += formatAttachment(file, base64);
       } catch (error) {
-        console.error('Failed to process attachment:', error);
+        console.error("Failed to process attachment:", error);
       }
     }
 
@@ -1993,15 +2165,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Add user message to chat
-    addMessageToChat('user', messageContent);
-    messageInput.value = '';
+    addMessageToChat("user", messageContent);
+    messageInput.value = "";
 
     // Clear attachments
     currentAttachments = [];
-    attachmentPreview.innerHTML = '';
+    attachmentPreview.innerHTML = "";
 
     // Check if we're using image generation model
-    if (modelSelector.value === 'image-generator') {
+    if (modelSelector.value === "image-generator") {
       generateImage(userMessage);
       return;
     }
@@ -2012,22 +2184,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Function to generate image using DALL-E
     async function generateImage(prompt) {
       if (!prompt) {
-        addMessageToChat('error', 'Please provide a description for the image you want to generate.');
+        addMessageToChat(
+          "error",
+          "Please provide a description for the image you want to generate.",
+        );
         return;
       }
 
       // Get image generation options
-      const imageSize = document.getElementById('image-size').value;
-      const imageStyle = document.getElementById('image-style').value;
-      const imageQuality = document.getElementById('image-quality').value;
-      const imageCount = parseInt(document.getElementById('image-count').value);
+      const imageSize = document.getElementById("image-size").value;
+      const imageStyle = document.getElementById("image-style").value;
+      const imageQuality = document.getElementById("image-quality").value;
+      const imageCount = parseInt(document.getElementById("image-count").value);
 
       // Create a message container for the AI response
-      const aiMessageElement = addMessageToChat('assistant', '');
+      const aiMessageElement = addMessageToChat("assistant", "");
       aiMessageElement.innerHTML = `
         <div class="image-gen-container">
           <div class="image-gen-status">
-            <p>Generating ${imageCount > 1 ? imageCount + ' images' : 'image'} (${imageSize}, ${imageStyle}, ${imageQuality})...</p>
+            <p>Generating ${imageCount > 1 ? imageCount + " images" : "image"} (${imageSize}, ${imageStyle}, ${imageQuality})...</p>
             <div class="upload-spinner"></div>
             <div class="generation-timer">Estimated time: <span id="countdown">30</span> seconds</div>
           </div>
@@ -2036,7 +2211,7 @@ document.addEventListener('DOMContentLoaded', function() {
       `;
 
       // Add countdown
-      const countdownElement = aiMessageElement.querySelector('#countdown');
+      const countdownElement = aiMessageElement.querySelector("#countdown");
       let timeLeft = 30;
       const countdownInterval = setInterval(() => {
         timeLeft--;
@@ -2051,20 +2226,20 @@ document.addEventListener('DOMContentLoaded', function() {
           clearInterval(countdownInterval);
 
           // Simulate generated images
-          let imagesHTML = '';
+          let imagesHTML = "";
 
           for (let i = 0; i < imageCount; i++) {
             // In production, use actual API response
             const dummyImageResponse = {
               success: true,
-              url: `https://source.unsplash.com/random/${imageSize}/?${encodeURIComponent(prompt)}&sig=${i}`
+              url: `https://source.unsplash.com/random/${imageSize}/?${encodeURIComponent(prompt)}&sig=${i}`,
             };
 
             if (dummyImageResponse.success) {
               const imageUrl = dummyImageResponse.url;
               imagesHTML += `
                 <div class="generated-image-container">
-                  <img src="${imageUrl}" alt="Generated image ${i+1}" class="generated-image">
+                  <img src="${imageUrl}" alt="Generated image ${i + 1}" class="generated-image">
                   <button class="save-image-btn" data-url="${imageUrl}">Save</button>
                 </div>
               `;
@@ -2072,11 +2247,13 @@ document.addEventListener('DOMContentLoaded', function() {
           }
 
           // Update the message content with the generated images
-          const statusElement = aiMessageElement.querySelector('.image-gen-status');
-          const previewElement = aiMessageElement.querySelector('.image-gen-preview');
+          const statusElement =
+            aiMessageElement.querySelector(".image-gen-status");
+          const previewElement =
+            aiMessageElement.querySelector(".image-gen-preview");
 
-          statusElement.style.display = 'none';
-          previewElement.style.display = 'block';
+          statusElement.style.display = "none";
+          previewElement.style.display = "block";
 
           if (imagesHTML) {
             previewElement.innerHTML = `
@@ -2090,41 +2267,43 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
 
             // Add event listeners to save buttons
-            const saveButtons = previewElement.querySelectorAll('.save-image-btn');
-            saveButtons.forEach(button => {
-              button.addEventListener('click', (e) => {
-                const url = e.target.getAttribute('data-url');
-                const link = document.createElement('a');
+            const saveButtons =
+              previewElement.querySelectorAll(".save-image-btn");
+            saveButtons.forEach((button) => {
+              button.addEventListener("click", (e) => {
+                const url = e.target.getAttribute("data-url");
+                const link = document.createElement("a");
                 link.href = url;
-                link.download = 'generated-image-' + Date.now() + '.png';
+                link.download = "generated-image-" + Date.now() + ".png";
                 link.click();
               });
             });
 
             // Make images clickable to view in modal
-            const generatedImages = previewElement.querySelectorAll('.generated-image');
-            generatedImages.forEach(img => {
-              img.addEventListener('click', () => {
+            const generatedImages =
+              previewElement.querySelectorAll(".generated-image");
+            generatedImages.forEach((img) => {
+              img.addEventListener("click", () => {
                 showImageInModal(img.src);
               });
             });
 
             // Save to chat history
-            saveChatMessage('assistant', aiMessageElement.innerHTML);
+            saveChatMessage("assistant", aiMessageElement.innerHTML);
           } else {
             // Handle error
             previewElement.innerHTML = `
               <p>Sorry, there was an error generating your image(s). Please try again.</p>
             `;
-            saveChatMessage('assistant', aiMessageElement.innerHTML);
+            saveChatMessage("assistant", aiMessageElement.innerHTML);
           }
         }, 3000); // Simulate API delay
       } catch (error) {
         clearInterval(countdownInterval);
         aiMessageElement.innerHTML = `
-          <p>Error generating image: ${error.message || 'Unknown error'}</p>
+          <p>Error generating image: ${error.message || "Unknown error"}</p>
         `;
-        saveChatMessage('assistant', aiMessageElement.innerHTML);
+        saveChatMessage("assistant", aiMessageElement.innerHTML);
       }
     }
 
@@ -2133,22 +2312,24 @@ document.addEventListener('DOMContentLoaded', function() {
       const selectedModel = activeDeepThinkModel || modelSelector.value;
 
       // Get system prompt if available
-      const systemPrompt = localStorage.getItem('system-prompt');
+      const systemPrompt = localStorage.getItem("system-prompt");
 
       // Determine if streaming should be used
-      const useStream = document.getElementById('stream-toggle').checked;
+      const useStream = document.getElementById("stream-toggle").checked;
 
       // Add knowledge base if items exist
-      let additionalContext = '';
+      let additionalContext = "";
       if (knowledgeBase.length > 0) {
         additionalContext = "\n\nKnowledge Base:\n";
-        knowledgeBase.forEach(item => {
-          additionalContext += `[${item.title}]: ${item.content.substring(0, 500)}${item.content.length > 500 ? '...' : ''}\n\n`;
+        knowledgeBase.forEach((item) => {
+          additionalContext += `[${item.title}]: ${item.content.substring(0, 500)}${item.content.length > 500 ? "..." : ""}\n\n`;
         });
       }
 
       // Combine message with knowledge base
-      const messageWithContext = additionalContext ? userMessage + additionalContext : userMessage;
+      const messageWithContext = additionalContext
+        ? userMessage + additionalContext
+        : userMessage;
 
       if (useStream) {
         // Get streaming response
@@ -2156,26 +2337,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add system prompt if available
         if (systemPrompt) {
-          messages.unshift({ role: 'system', content: systemPrompt });
+          messages.unshift({ role: "system", content: systemPrompt });
         }
 
-        messages.push({ role: 'user', content: messageWithContext });
+        messages.push({ role: "user", content: messageWithContext });
 
         // Remove typing indicator
         typingIndicator.remove();
 
         // Create AI message container
-        const aiMessageElement = addMessageToChat('assistant', '');
+        const aiMessageElement = addMessageToChat("assistant", "");
 
         // Use streaming API
         const resp = await puter.ai.chat(messages, false, {
           model: selectedModel,
-          stream: true
+          stream: true,
         });
 
-        let fullResponse = '';
+        let fullResponse = "";
         for await (const part of resp) {
-          fullResponse += part?.text || '';
+          fullResponse += part?.text || "";
           aiMessageElement.innerHTML = marked.parse(fullResponse);
 
           // Activate syntax highlighting for code blocks
@@ -2183,12 +2364,12 @@ document.addEventListener('DOMContentLoaded', function() {
             Prism.highlightAllUnder(aiMessageElement);
           }, 0);
 
-          aiMessageElement.scrollIntoView({ behavior: 'smooth' });
+          aiMessageElement.scrollIntoView({ behavior: "smooth" });
         }
 
         // Store the message in chat history
-        saveChatMessage('user', userMessage);
-        saveChatMessage('assistant', fullResponse);
+        saveChatMessage("user", userMessage);
+        saveChatMessage("assistant", fullResponse);
 
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {
@@ -2200,22 +2381,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
         // Add system prompt if available
         if (systemPrompt) {
-          messages.unshift({ role: 'system', content: systemPrompt });
+          messages.unshift({ role: "system", content: systemPrompt });
         }
 
         // Check for image attachments to process
         let hasImageAttachments = false;
-        let imageContext = '';
+        let imageContext = "";
 
         for (const attachment of validAttachments) {
-          if (attachment.type.startsWith('image/')) {
+          if (attachment.type.startsWith("image/")) {
             hasImageAttachments = true;
             // In production, use the real vision API
             imageContext += "This message contains an image attachment. ";
-          } else if (attachment.type === 'application/pdf' ||
-                     attachment.name.endsWith('.docx') ||
-                     attachment.name.endsWith('.doc') ||
-                     attachment.name.endsWith('.txt')) {
+          } else if (
+            attachment.type === "application/pdf" ||
+            attachment.name.endsWith(".docx") ||
+            attachment.name.endsWith(".doc") ||
+            attachment.name.endsWith(".txt")
+          ) {
             // Add instruction to OCR the document
             imageContext += `This message contains a document attachment (${attachment.name}). Please analyze its contents. `;
           }
@@ -2226,21 +2409,21 @@ document.addEventListener('DOMContentLoaded', function() {
           messageWithContext = `${messageWithContext}\n\n${imageContext}`;
         }
 
-        messages.push({ role: 'user', content: messageWithContext });
+        messages.push({ role: "user", content: messageWithContext });
 
         const response = await puter.ai.chat(messages, false, {
-          model: selectedModel
+          model: selectedModel,
         });
 
         // Remove typing indicator
         typingIndicator.remove();
 
         // Add AI response to chat
-        addMessageToChat('assistant', response.text);
+        addMessageToChat("assistant", response.text);
 
         // Store the message in chat history
-        saveChatMessage('user', userMessage);
-        saveChatMessage('assistant', response.text);
+        saveChatMessage("user", userMessage);
+        saveChatMessage("assistant", response.text);
 
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {
@@ -2252,30 +2435,37 @@ document.addEventListener('DOMContentLoaded', function() {
       typingIndicator.remove();
 
       // Show error message
-      addMessageToChat('error', `Error: ${error.message || 'Something went wrong'}`);
+      addMessageToChat(
+        "error",
+        `Error: ${error.message || "Something went wrong"}`,
+      );
     }
   }
 
   // Add message to chat UI
   function addMessageToChat(role, content) {
-    const messageElement = document.createElement('div');
+    const messageElement = document.createElement("div");
     messageElement.className = `message ${role}-message`;
 
     // Check if this message should be grouped with the previous one
     const lastMessage = chatContainer.lastElementChild;
-    const shouldGroup = lastMessage &&
-                        lastMessage.classList.contains(`${role}-message`) &&
-                        !lastMessage.classList.contains('typing-indicator');
+    const shouldGroup =
+      lastMessage &&
+      lastMessage.classList.contains(`${role}-message`) &&
+      !lastMessage.classList.contains("typing-indicator");
 
     if (shouldGroup) {
-      messageElement.classList.add('grouped-message');
+      messageElement.classList.add("grouped-message");
     }
 
     // Create timestamp
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
 
     // Different styling based on role
-    if (role === 'user') {
+    if (role === "user") {
       messageElement.innerHTML = `
         <div class="message-header">
           <span class="message-label">You</span>
@@ -2306,34 +2496,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Add event listeners for edit and copy buttons
       setTimeout(() => {
-        const editButton = messageElement.querySelector('.edit-button');
-        const copyButton = messageElement.querySelector('.copy-button');
-        const deleteButton = messageElement.querySelector('.delete-button');
+        const editButton = messageElement.querySelector(".edit-button");
+        const copyButton = messageElement.querySelector(".copy-button");
+        const deleteButton = messageElement.querySelector(".delete-button");
 
-        editButton.addEventListener('click', () => {
+        editButton.addEventListener("click", () => {
           messageInput.value = content;
           messageInput.focus();
         });
 
-        copyButton.addEventListener('click', () => {
-          navigator.clipboard.writeText(content)
+        copyButton.addEventListener("click", () => {
+          navigator.clipboard
+            .writeText(content)
             .then(() => {
               // Optional: Show a brief "Copied" tooltip
-              const originalTitle = copyButton.getAttribute('title');
-              copyButton.setAttribute('title', 'Copied!');
+              const originalTitle = copyButton.getAttribute("title");
+              copyButton.setAttribute("title", "Copied!");
               setTimeout(() => {
-                copyButton.setAttribute('title', originalTitle);
+                copyButton.setAttribute("title", originalTitle);
               }, 1000);
             })
-            .catch(err => {
-              console.error('Failed to copy text: ', err);
+            .catch((err) => {
+              console.error("Failed to copy text: ", err);
             });
         });
 
-        deleteButton.addEventListener('click', () => {
+        deleteButton.addEventListener("click", () => {
           // Add a confirmation before deleting
-          if (confirm('Are you sure you want to delete this message?')) {
-            messageElement.classList.add('message-deleting');
+          if (confirm("Are you sure you want to delete this message?")) {
+            messageElement.classList.add("message-deleting");
             setTimeout(() => {
               messageElement.remove();
               // Note: we should ideally update the KV store to remove this message as well
@@ -2342,13 +2533,13 @@ document.addEventListener('DOMContentLoaded', function() {
           }
         });
       }, 0);
-    } else if (role === 'assistant') {
+    } else if (role === "assistant") {
       messageElement.innerHTML = `
         <div class="message-header">
           <span class="message-label">AI</span>
           <span class="message-timestamp">${timestamp}</span>
         </div>
-        <div class="message-content">${content ? marked.parse(content) : ''}</div>
+        <div class="message-content">${content ? marked.parse(content) : ""}</div>
         <div class="message-actions assistant-actions">
           <div class="action-button regenerate-button" title="Regenerate response">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -2374,57 +2565,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Add event listener for copy button
       setTimeout(() => {
-        const regenerateButton = messageElement.querySelector('.regenerate-button');
-        const copyButton = messageElement.querySelector('.copy-button');
-        const deleteButton = messageElement.querySelector('.delete-button');
+        const regenerateButton =
+          messageElement.querySelector(".regenerate-button");
+        const copyButton = messageElement.querySelector(".copy-button");
+        const deleteButton = messageElement.querySelector(".delete-button");
 
         // Add copy buttons to code blocks
-        const codeBlocks = messageElement.querySelectorAll('pre code');
+        const codeBlocks = messageElement.querySelectorAll("pre code");
         codeBlocks.forEach((codeBlock, index) => {
-          const copyBtn = document.createElement('button');
-          copyBtn.className = 'code-copy-button';
-          copyBtn.textContent = 'Copy';
+          const copyBtn = document.createElement("button");
+          copyBtn.className = "code-copy-button";
+          copyBtn.textContent = "Copy";
           copyBtn.onclick = (e) => {
             e.preventDefault();
             e.stopPropagation();
-            navigator.clipboard.writeText(codeBlock.textContent)
+            navigator.clipboard
+              .writeText(codeBlock.textContent)
               .then(() => {
-                copyBtn.textContent = 'Copied!';
+                copyBtn.textContent = "Copied!";
                 setTimeout(() => {
-                  copyBtn.textContent = 'Copy';
+                  copyBtn.textContent = "Copy";
                 }, 2000);
               })
-              .catch(err => {
-                console.error('Failed to copy code: ', err);
+              .catch((err) => {
+                console.error("Failed to copy code: ", err);
               });
           };
-          codeBlock.parentNode.style.position = 'relative';
+          codeBlock.parentNode.style.position = "relative";
           codeBlock.parentNode.appendChild(copyBtn);
         });
 
         // Activate syntax highlighting
         Prism.highlightAllUnder(messageElement);
 
-
         if (regenerateButton) {
-          regenerateButton.addEventListener('click', async () => {
+          regenerateButton.addEventListener("click", async () => {
             // Find the previous user message
             let prevUserMessage = null;
             let currentElement = messageElement;
 
             // Navigate backwards to find the last user message
-            while (currentElement = currentElement.previousElementSibling) {
-              if (currentElement.classList.contains('user-message')) {
-                const messageContentDiv = currentElement.querySelector('.message-content');
+            while ((currentElement = currentElement.previousElementSibling)) {
+              if (currentElement.classList.contains("user-message")) {
+                const messageContentDiv =
+                  currentElement.querySelector(".message-content");
                 if (messageContentDiv) {
                   // Extract text content, ignoring any attachments
                   const contentHTML = messageContentDiv.innerHTML;
-                  const tempDiv = document.createElement('div');
+                  const tempDiv = document.createElement("div");
                   tempDiv.innerHTML = contentHTML;
 
                   // Remove any attachments from the content
-                  const attachments = tempDiv.querySelectorAll('.file-attachment');
-                  attachments.forEach(attachment => {
+                  const attachments =
+                    tempDiv.querySelectorAll(".file-attachment");
+                  attachments.forEach((attachment) => {
                     attachment.remove();
                   });
 
@@ -2435,12 +2629,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             if (!prevUserMessage) {
-              alert('Could not find the previous user message to regenerate a response.');
+              alert(
+                "Could not find the previous user message to regenerate a response.",
+              );
               return;
             }
 
             // Remove the current AI message
-            messageElement.classList.add('message-deleting');
+            messageElement.classList.add("message-deleting");
             setTimeout(async () => {
               messageElement.remove();
 
@@ -2449,29 +2645,32 @@ document.addEventListener('DOMContentLoaded', function() {
 
               // Generate new response
               try {
-                const useStream = document.getElementById('stream-toggle').checked;
+                const useStream =
+                  document.getElementById("stream-toggle").checked;
                 if (useStream) {
                   const messages = await getChatHistory();
                   // Add the last user message again
-                  messages.push({ role: 'user', content: prevUserMessage });
+                  messages.push({ role: "user", content: prevUserMessage });
 
                   // Remove typing indicator
                   typingIndicator.remove();
 
                   // Create AI message container
-                  const aiMessageElement = addMessageToChat('assistant', '');
+                  const aiMessageElement = addMessageToChat("assistant", "");
 
                   // Use streaming API with proper options format
                   const resp = await puter.ai.chat(prevUserMessage, {
                     model: selectedModel,
-                    stream: true
+                    stream: true,
                   });
 
-                  let fullResponse = '';
+                  let fullResponse = "";
                   for await (const part of resp) {
-                    fullResponse += part?.text || '';
-                    aiMessageElement.querySelector('.message-content').innerHTML = marked.parse(fullResponse);
-                    aiMessageElement.scrollIntoView({ behavior: 'smooth' });
+                    fullResponse += part?.text || "";
+                    aiMessageElement.querySelector(
+                      ".message-content",
+                    ).innerHTML = marked.parse(fullResponse);
+                    aiMessageElement.scrollIntoView({ behavior: "smooth" });
                   }
 
                   // Update chat history (replace last assistant message)
@@ -2479,17 +2678,17 @@ document.addEventListener('DOMContentLoaded', function() {
                 } else {
                   const messages = await getChatHistory();
                   // Add the last user message again
-                  messages.push({ role: 'user', content: prevUserMessage });
+                  messages.push({ role: "user", content: prevUserMessage });
 
                   const response = await puter.ai.chat(prevUserMessage, {
-                    model: selectedModel
+                    model: selectedModel,
                   });
 
                   // Remove typing indicator if it exists
                   if (typingIndicator) typingIndicator.remove();
 
                   // Add AI response to chat
-                  addMessageToChat('assistant', response.text);
+                  addMessageToChat("assistant", response.text);
 
                   // Update chat history (replace last assistant message)
                   updateLastAssistantMessage(response.text);
@@ -2499,32 +2698,36 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (typingIndicator) typingIndicator.remove();
 
                 // Show error message
-                addMessageToChat('error', `Error: ${error.message || 'Something went wrong'}`);
+                addMessageToChat(
+                  "error",
+                  `Error: ${error.message || "Something went wrong"}`,
+                );
               }
             }, 300);
           });
         }
 
-        copyButton.addEventListener('click', () => {
+        copyButton.addEventListener("click", () => {
           // Get the raw content without markdown parsing
-          navigator.clipboard.writeText(content)
+          navigator.clipboard
+            .writeText(content)
             .then(() => {
               // Optional: Show a brief "Copied" tooltip
-              const originalTitle = copyButton.getAttribute('title');
-              copyButton.setAttribute('title', 'Copied!');
+              const originalTitle = copyButton.getAttribute("title");
+              copyButton.setAttribute("title", "Copied!");
               setTimeout(() => {
-                copyButton.setAttribute('title', originalTitle);
+                copyButton.setAttribute("title", originalTitle);
               }, 1000);
             })
-            .catch(err => {
-              console.error('Failed to copy text: ', err);
+            .catch((err) => {
+              console.error("Failed to copy text: ", err);
             });
         });
 
         if (deleteButton) {
-          deleteButton.addEventListener('click', () => {
-            if (confirm('Are you sure you want to delete this message?')) {
-              messageElement.classList.add('message-deleting');
+          deleteButton.addEventListener("click", () => {
+            if (confirm("Are you sure you want to delete this message?")) {
+              messageElement.classList.add("message-deleting");
               setTimeout(() => {
                 messageElement.remove();
               }, 300);
@@ -2543,15 +2746,18 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     chatContainer.appendChild(messageElement);
-    messageElement.scrollIntoView({ behavior: 'smooth' });
-    return messageElement.querySelector('.message-content');
+    messageElement.scrollIntoView({ behavior: "smooth" });
+    return messageElement.querySelector(".message-content");
   }
 
   // Add typing indicator
   function addTypingIndicator() {
-    const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const indicator = document.createElement('div');
-    indicator.className = 'message assistant-message typing-indicator';
+    const timestamp = new Date().toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const indicator = document.createElement("div");
+    indicator.className = "message assistant-message typing-indicator";
     indicator.innerHTML = `
       <div class="message-header">
         <span class="message-label">AI</span>
@@ -2560,20 +2766,20 @@ document.addEventListener('DOMContentLoaded', function() {
       <div class="message-content"><div class="dot-flashing"></div></div>
     `;
     chatContainer.appendChild(indicator);
-    indicator.scrollIntoView({ behavior: 'smooth' });
+    indicator.scrollIntoView({ behavior: "smooth" });
     return indicator;
   }
 
   // Clear chat history
   async function clearChat() {
     // Clear UI
-    chatContainer.innerHTML = '';
+    chatContainer.innerHTML = "";
 
     // Clear KV store chat history
-    await puter.kv.del('chat_history');
+    await puter.kv.del("chat_history");
 
     // Add welcome message
-    addMessageToChat('assistant', 'Hello! How can I help you today?');
+    addMessageToChat("assistant", "Hello! How can I help you today?");
   }
 
   // Save chat message to KV store
@@ -2583,15 +2789,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // For messages with attachments, strip out base64 data to save space
       let storageContent = content;
-      if (content.includes('data:image')) {
+      if (content.includes("data:image")) {
         // Create a simplified version for storage that references attachments but doesn't include the raw data
-        const tempDiv = document.createElement('div');
+        const tempDiv = document.createElement("div");
         tempDiv.innerHTML = content;
 
         // Replace image sources with placeholders
-        const images = tempDiv.querySelectorAll('img');
+        const images = tempDiv.querySelectorAll("img");
         images.forEach((img, index) => {
-          img.setAttribute('src', '[IMAGE ATTACHMENT]');
+          img.setAttribute("src", "[IMAGE ATTACHMENT]");
         });
 
         storageContent = tempDiv.innerHTML;
@@ -2604,19 +2810,19 @@ document.addEventListener('DOMContentLoaded', function() {
         history = history.slice(history.length - 20);
       }
 
-      await puter.kv.set('chat_history', JSON.stringify(history));
+      await puter.kv.set("chat_history", JSON.stringify(history));
     } catch (error) {
-      console.error('Failed to save chat history:', error);
+      console.error("Failed to save chat history:", error);
     }
   }
 
   // Get chat history from KV store
   async function getChatHistory() {
     try {
-      const history = await puter.kv.get('chat_history');
+      const history = await puter.kv.get("chat_history");
       return history ? JSON.parse(history) : [];
     } catch (error) {
-      console.error('Failed to load chat history:', error);
+      console.error("Failed to load chat history:", error);
       return [];
     }
   }
@@ -2628,15 +2834,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Find the last assistant message in the history
       for (let i = history.length - 1; i >= 0; i--) {
-        if (history[i].role === 'assistant') {
+        if (history[i].role === "assistant") {
           history[i].content = newContent;
           break;
         }
       }
 
-      await puter.kv.set('chat_history', JSON.stringify(history));
+      await puter.kv.set("chat_history", JSON.stringify(history));
     } catch (error) {
-      console.error('Failed to update chat history:', error);
+      console.error("Failed to update chat history:", error);
     }
   }
 
@@ -2647,16 +2853,16 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (history.length > 0) {
         // Display existing messages
-        history.forEach(msg => {
+        history.forEach((msg) => {
           addMessageToChat(msg.role, msg.content);
         });
       } else {
         // Add welcome message for new users
-        addMessageToChat('assistant', 'Hello! How can I help you today?');
+        addMessageToChat("assistant", "Hello! How can I help you today?");
       }
     } catch (error) {
-      console.error('Failed to load chat history:', error);
-      addMessageToChat('assistant', 'Hello! How can I help you today?');
+      console.error("Failed to load chat history:", error);
+      addMessageToChat("assistant", "Hello! How can I help you today?");
     }
   }
 });

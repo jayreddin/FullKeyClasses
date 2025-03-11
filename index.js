@@ -1596,7 +1596,7 @@ document.addEventListener("DOMContentLoaded", function () {
       compactModeToggle.addEventListener("change", () => {
         if (compactModeToggle.checked) {
           document.body.classList.add("compact-mode");
-        } else {
+        } else{
           document.body.classList.remove("compact-mode");
         }
       });
@@ -2200,9 +2200,13 @@ document.addEventListener("DOMContentLoaded", function () {
       // Hide image generation options when sending
       document.getElementById("image-gen-options").style.display = "none";
 
+      // Move utility buttons up when image gen is active
+      document.querySelector(".utility-bar").style.bottom = "70px";
+      document.querySelector(".active-model-indicator-container").style.bottom = "110px";
+
       // Create a message container for the AI response
       const aiMessageElement = addMessageToChat("assistant", "");
-      
+
       // Create thumbnails for loading
       let thumbnailsHTML = "";
       for (let i = 0; i < imageCount; i++) {
@@ -2217,7 +2221,7 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
         `;
       }
-      
+
       aiMessageElement.innerHTML = `
         <div class="image-gen-container">
           <div class="image-gen-thumbnails">
@@ -2239,60 +2243,60 @@ document.addEventListener("DOMContentLoaded", function () {
         // Simulate progress updates for each thumbnail
         const progressIntervals = [];
         let generatedImages = [];
-        
+
         for (let i = 0; i < imageCount; i++) {
           const progressBar = aiMessageElement.querySelector(`#progress-${i}`);
           const progressText = progressBar.parentElement.querySelector(".thumbnail-progress-text");
           let progress = 0;
-          
+
           const interval = setInterval(() => {
             progress += Math.random() * 5;
             if (progress > 100) progress = 100;
-            
+
             progressBar.style.width = `${progress}%`;
             progressText.textContent = `${Math.round(progress)}%`;
-            
+
             // When progress reaches 100%, show the image
             if (progress >= 100) {
               clearInterval(interval);
-              
+
               // In production, use the actual API response
               const imageUrl = `https://source.unsplash.com/random/${imageSize}/?${encodeURIComponent(prompt)}&sig=${i}`;
-              
+
               generatedImages.push({
                 url: imageUrl,
                 index: i
               });
-              
+
               // Replace the placeholder with the generated image
               const thumbnail = aiMessageElement.querySelector(`.image-thumbnail[data-index="${i}"]`);
               thumbnail.innerHTML = `<img src="${imageUrl}" class="thumbnail-image" alt="Generated image ${i + 1}">`;
-              
+
               // If all images are generated, set up the preview
               if (generatedImages.length === imageCount) {
                 setupImagePreview(aiMessageElement, generatedImages, prompt, imageSize, imageStyle, imageQuality);
               }
             }
           }, 500 + (i * 200)); // Stagger the progress updates
-          
+
           progressIntervals.push(interval);
         }
-        
+
         // If there's an error, clean up all intervals
         setTimeout(() => {
           progressIntervals.forEach(clearInterval);
-          
+
           // If no images were generated, show an error
           if (generatedImages.length === 0) {
             aiMessageElement.querySelector('.image-gen-thumbnails').innerHTML = `
               <p>Sorry, there was an error generating your image(s). Please try again.</p>
             `;
           }
-          
+
           // Save the message to chat history
           saveChatMessage("assistant", aiMessageElement.innerHTML);
         }, 10000); // Maximum time to wait for generation
-        
+
       } catch (error) {
         aiMessageElement.querySelector('.image-gen-thumbnails').innerHTML = `
           <p>Error generating image: ${error.message || "Unknown error"}</p>
@@ -2300,7 +2304,7 @@ document.addEventListener("DOMContentLoaded", function () {
         saveChatMessage("assistant", aiMessageElement.innerHTML);
       }
     }
-    
+
     // Function to set up image preview when thumbnails are clicked
     function setupImagePreview(messageElement, images, prompt, size, style, quality) {
       const thumbnails = messageElement.querySelectorAll('.image-thumbnail');
@@ -2308,9 +2312,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = messageElement.querySelector('.image-gen-preview');
       const prevBtn = messageElement.querySelector('.prev-image-btn');
       const nextBtn = messageElement.querySelector('.next-image-btn');
-      
+
       let currentIndex = 0;
-      
+
       // Show preview when a thumbnail is clicked
       thumbnails.forEach((thumbnail, index) => {
         thumbnail.addEventListener('click', () => {
@@ -2318,23 +2322,23 @@ document.addEventListener("DOMContentLoaded", function () {
           showPreview();
         });
       });
-      
+
       // Navigation buttons
       prevBtn.addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + images.length) % images.length;
         updatePreview();
       });
-      
+
       nextBtn.addEventListener('click', () => {
         currentIndex = (currentIndex + 1) % images.length;
         updatePreview();
       });
-      
+
       function showPreview() {
         previewContainer.style.display = 'flex';
         updatePreview();
       }
-      
+
       function updatePreview() {
         const image = images[currentIndex];
         preview.innerHTML = `
@@ -2343,7 +2347,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <button class="save-image-btn" data-url="${image.url}">Save Image</button>
           </div>
         `;
-        
+
         // Add save button functionality
         preview.querySelector('.save-image-btn').addEventListener('click', () => {
           const url = image.url;
@@ -2352,7 +2356,7 @@ document.addEventListener("DOMContentLoaded", function () {
           link.download = `generated-image-${Date.now()}.png`;
           link.click();
         });
-        
+
         // Make image clickable to view in modal
         preview.querySelector('.preview-image').addEventListener('click', () => {
           showImageInModal(image.url);
@@ -2415,11 +2419,11 @@ document.addEventListener("DOMContentLoaded", function () {
           try {
             // For Puter API, we need to format the message specially for vision analysis
             const visionPrompt = messageWithContext + " (Please analyze this image in detail)";
-            
+
             // This would use the actual Puter vision API
             // For demo purposes, we're using a regular message with context
             messageWithContext = visionPrompt;
-            
+
             // For each image, add to the context
             images.forEach(img => {
               messageWithContext += `\n\nImage: ${img.name}`;
@@ -2447,17 +2451,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const formattedMessages = [];
-      
+
       // Add system prompt if available
       if (systemPrompt) {
         formattedMessages.push({ role: "system", content: systemPrompt });
       }
-      
+
       // Add chat history for context
       for (const msg of await getChatHistory()) {
         formattedMessages.push(msg);
       }
-      
+
       // Add current user message
       formattedMessages.push({ role: "user", content: messageWithContext });
 
@@ -2480,12 +2484,12 @@ document.addEventListener("DOMContentLoaded", function () {
           const contentElement = aiMessageElement.querySelector(".message-content");
           if (contentElement) {
             contentElement.innerHTML = marked.parse(fullResponse);
-            
+
             // Activate syntax highlighting for code blocks
             setTimeout(() => {
               Prism.highlightAllUnder(contentElement);
             }, 0);
-            
+
             aiMessageElement.scrollIntoView({ behavior: "smooth" });
           }
         }

@@ -142,3 +142,107 @@ export function getModelDescription(modelId) {
     descriptions[modelId] || "Advanced reasoning model for enhanced thinking."
   );
 }
+// Utility functions for the application
+
+// Function to safely get DOM elements with error handling
+export function getElement(selector) {
+  const element = document.querySelector(selector);
+  if (!element) {
+    console.error(`Element not found: ${selector}`);
+  }
+  return element;
+}
+
+// Function to apply theme
+export function applyTheme(theme) {
+  if (theme === "dark") {
+    document.body.classList.add("dark-theme");
+    // Update Prism theme for code blocks
+    document.getElementById("prism-theme-dark").disabled = false;
+  } else {
+    document.body.classList.remove("dark-theme");
+    // Update Prism theme for code blocks
+    document.getElementById("prism-theme-dark").disabled = true;
+  }
+}
+
+// Function to apply text size
+export function applyTextSize(size) {
+  document.documentElement.style.setProperty('--text-size', `${size}px`);
+}
+
+// Function to apply compact mode
+export function applyCompactMode(isCompact) {
+  if (isCompact) {
+    document.body.classList.add("compact-mode");
+  } else {
+    document.body.classList.remove("compact-mode");
+  }
+}
+
+// Function to initialize DOM elements and load settings
+export function initializeDOM() {
+  const settings = loadSettings();
+  
+  // Apply settings
+  applyTheme(settings.theme);
+  applyTextSize(settings.textSize);
+  applyCompactMode(settings.compactMode);
+  
+  // Set theme toggle state
+  const themeToggle = getElement("#theme-toggle");
+  if (themeToggle) {
+    themeToggle.checked = settings.theme === "dark";
+    themeToggle.addEventListener("change", (e) => {
+      const newTheme = e.target.checked ? "dark" : "light";
+      localStorage.setItem("theme", newTheme);
+      applyTheme(newTheme);
+    });
+  }
+  
+  // Set model selector
+  const modelSelector = getElement("#model-selector");
+  if (modelSelector) {
+    modelSelector.value = settings.defaultModel;
+    modelSelector.addEventListener("change", (e) => {
+      localStorage.setItem("default-model", e.target.value);
+      document.getElementById("active-model-indicator").textContent = `Active: ${e.target.value}`;
+      
+      // Toggle image generation options visibility
+      const isImageGenerator = e.target.value === "image-generator";
+      if (document.getElementById("image-gen-options")) {
+        document.getElementById("image-gen-options").style.display = isImageGenerator ? "block" : "none";
+      }
+    });
+    
+    // Trigger the change event to set initial state
+    modelSelector.dispatchEvent(new Event("change"));
+  }
+}
+
+// Function to format a timestamp
+export function formatTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+}
+
+// Function to create a HTML element with attributes and content
+export function createElement(tag, attributes = {}, content = '') {
+  const element = document.createElement(tag);
+  
+  for (const [key, value] of Object.entries(attributes)) {
+    if (key === 'classList' && Array.isArray(value)) {
+      value.forEach(cls => element.classList.add(cls));
+    } else {
+      element.setAttribute(key, value);
+    }
+  }
+  
+  if (content) {
+    element.innerHTML = content;
+  }
+  
+  return element;
+}
+
+import { loadSettings } from './settings.js';

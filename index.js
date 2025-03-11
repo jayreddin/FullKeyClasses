@@ -14,6 +14,8 @@ import {
   loadChatHistoryFromStorage,
   updateLastAssistantMessage 
 } from './js/chatHistory.js';
+import { initializeDOM } from './js/utils.js';
+
 
 document.addEventListener("DOMContentLoaded", function () {
   // Initialize the chat interface
@@ -585,4 +587,66 @@ document.addEventListener("DOMContentLoaded", function () {
   window.showImageInModal = showImageInModal;
   window.removeAttachment = removeAttachment;
   window.updateLastAssistantMessage = updateLastAssistantMessage;
+
+  try {
+    // Initialize DOM and load settings
+    initializeDOM();
+
+    // Initialize all components
+    setupEmojiPicker(messageInput);
+    const { setupAttachmentHandling, removeAttachment } = setupAttachments(
+      currentAttachments,
+      attachmentPreview,
+      fileInput
+    );
+    const { speakText, toggleVoiceRecording, toggleTextToSpeech } = setupVoiceAndSpeech(
+      micButton,
+      ttsButton,
+      messageInput,
+      isTtsEnabled
+    );
+    setupSettings();
+    setupUtilityBar(
+      utilityPopup,
+      popupTitle,
+      popupBody,
+      popupClose,
+      popupCancel,
+      popupSave,
+      activeModelIndicator,
+      currentUtilityMode,
+      tempAttachments,
+      currentAttachments,
+      attachmentPreview,
+      modal,
+      modalImage,
+      activeDeepThinkModel,
+      knowledgeBase,
+      chatHistoryList,
+      newChatBtn,
+      historyBtn,
+      imageUploadBtn,
+      fileUploadBtn,
+      codeBtn,
+      websearchBtn,
+      deepthinkBtn,
+      knowledgebaseBtn,
+      settingsBtn,
+      showImageInModal,
+      generateChatId,
+      currentChatId,
+      saveChatToHistory,
+      loadChatFromHistory,
+      chatContainer,
+      messageInput,
+      addMessageToChat
+    );
+
+    // Load any saved chat history
+    loadChatHistory(chatContainer);
+
+    console.log("Application initialized successfully");
+  } catch (error) {
+    console.error("Error initializing application:", error);
+  }
 });

@@ -1,1 +1,16 @@
 modules = ["nodejs-20", "nodejs-23"]
+
+[workflows]
+runButton = "Run"
+
+[[workflows.workflow]]
+name = "Run"
+author = 38209820
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node server.js"
+
+[[ports]]
+localPort = 3000
+externalPort = 80

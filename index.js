@@ -246,6 +246,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Generate a new chat ID
     currentChatId = generateChatId();
+
+    // Add welcome message
+    addMessageToChat("assistant", "Hello! How can I help you today?");
   });
 
   // Chat history button handler
@@ -1451,6 +1454,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set up settings functionality
     setTimeout(() => {
+      const settingsTabs = document.querySelectorAll(".settings-tab");
       const themeToggle = document.getElementById("settings-theme-toggle");
       const textSizeValue = document.getElementById("text-size-value");
       const textSizeDecrease = document.getElementById("text-size-decrease");
@@ -1484,7 +1488,6 @@ document.addEventListener("DOMContentLoaded", function () {
       );
 
       // Tab navigation
-      const settingsTabs = document.querySelectorAll(".settings-tab");
       settingsTabs.forEach((tab) => {
         tab.addEventListener("click", () => {
           // Remove active class from all tabs
@@ -1493,30 +1496,14 @@ document.addEventListener("DOMContentLoaded", function () {
           // Add active class to clicked tab
           tab.classList.add("active");
 
-          // Hide all sections and remove AI settings duplicate content
+          // Hide all sections
           document.querySelectorAll(".settings-section").forEach((section) => {
             section.classList.remove("active");
-            section.style.display = "none";
-
-            // Clean up any duplicated AI settings that shouldn't be in other tabs
-            if (section.id !== "ai-settings-section") {
-              // Remove duplicated AI settings from non-AI tabs
-              const aiSettingsElements = section.querySelectorAll('.advanced-settings-row, .slider-setting');
-              aiSettingsElements.forEach(el => {
-                if (el.closest('#ai-settings-section') === null) {
-                  el.remove();
-                }
-              });
-            }
           });
 
           // Show selected section
           const sectionId = tab.getAttribute("data-tab") + "-section";
-          const section = document.getElementById(sectionId);
-          if (section) {
-            section.classList.add("active");
-            section.style.display = "block";
-          }
+          document.getElementById(sectionId).classList.add("active");
         });
       });
 
@@ -1588,7 +1575,7 @@ document.addEventListener("DOMContentLoaded", function () {
               window.location.reload();
             })
             .catch((error) => {
-              console.error("Failed to clearchat history:", error);
+              console.error("Failed to clear chat history:", error);
               alert("Failed to clear chat history. Please try again.");
             });
         }
@@ -1609,7 +1596,7 @@ document.addEventListener("DOMContentLoaded", function () {
       compactModeToggle.addEventListener("change", () => {
         if (compactModeToggle.checked) {
           document.body.classList.add("compact-mode");
-        } else{
+        } else {
           document.body.classList.remove("compact-mode");
         }
       });
@@ -2213,16 +2200,9 @@ document.addEventListener("DOMContentLoaded", function () {
       // Hide image generation options when sending
       document.getElementById("image-gen-options").style.display = "none";
 
-      // Move utility buttons up when image gen is active
-      const utilityBar = document.querySelector(".utility-bar");
-      const activeModelIndicator = document.querySelector(".active-model-indicator-container");
-
-      if (utilityBar) utilityBar.style.bottom = "70px";
-      if (activeModelIndicator) activeModelIndicator.style.bottom = "110px";
-
       // Create a message container for the AI response
       const aiMessageElement = addMessageToChat("assistant", "");
-
+      
       // Create thumbnails for loading
       let thumbnailsHTML = "";
       for (let i = 0; i < imageCount; i++) {
@@ -2237,7 +2217,7 @@ document.addEventListener("DOMContentLoaded", function () {
           </div>
         `;
       }
-
+      
       aiMessageElement.innerHTML = `
         <div class="image-gen-container">
           <div class="image-gen-thumbnails">
@@ -2259,60 +2239,60 @@ document.addEventListener("DOMContentLoaded", function () {
         // Simulate progress updates for each thumbnail
         const progressIntervals = [];
         let generatedImages = [];
-
+        
         for (let i = 0; i < imageCount; i++) {
           const progressBar = aiMessageElement.querySelector(`#progress-${i}`);
           const progressText = progressBar.parentElement.querySelector(".thumbnail-progress-text");
           let progress = 0;
-
+          
           const interval = setInterval(() => {
             progress += Math.random() * 5;
             if (progress > 100) progress = 100;
-
+            
             progressBar.style.width = `${progress}%`;
             progressText.textContent = `${Math.round(progress)}%`;
-
+            
             // When progress reaches 100%, show the image
             if (progress >= 100) {
               clearInterval(interval);
-
+              
               // In production, use the actual API response
               const imageUrl = `https://source.unsplash.com/random/${imageSize}/?${encodeURIComponent(prompt)}&sig=${i}`;
-
+              
               generatedImages.push({
                 url: imageUrl,
                 index: i
               });
-
+              
               // Replace the placeholder with the generated image
               const thumbnail = aiMessageElement.querySelector(`.image-thumbnail[data-index="${i}"]`);
               thumbnail.innerHTML = `<img src="${imageUrl}" class="thumbnail-image" alt="Generated image ${i + 1}">`;
-
+              
               // If all images are generated, set up the preview
               if (generatedImages.length === imageCount) {
                 setupImagePreview(aiMessageElement, generatedImages, prompt, imageSize, imageStyle, imageQuality);
               }
             }
           }, 500 + (i * 200)); // Stagger the progress updates
-
+          
           progressIntervals.push(interval);
         }
-
+        
         // If there's an error, clean up all intervals
         setTimeout(() => {
           progressIntervals.forEach(clearInterval);
-
+          
           // If no images were generated, show an error
           if (generatedImages.length === 0) {
             aiMessageElement.querySelector('.image-gen-thumbnails').innerHTML = `
               <p>Sorry, there was an error generating your image(s). Please try again.</p>
             `;
           }
-
+          
           // Save the message to chat history
           saveChatMessage("assistant", aiMessageElement.innerHTML);
         }, 10000); // Maximum time to wait for generation
-
+        
       } catch (error) {
         aiMessageElement.querySelector('.image-gen-thumbnails').innerHTML = `
           <p>Error generating image: ${error.message || "Unknown error"}</p>
@@ -2320,7 +2300,7 @@ document.addEventListener("DOMContentLoaded", function () {
         saveChatMessage("assistant", aiMessageElement.innerHTML);
       }
     }
-
+    
     // Function to set up image preview when thumbnails are clicked
     function setupImagePreview(messageElement, images, prompt, size, style, quality) {
       const thumbnails = messageElement.querySelectorAll('.image-thumbnail');
@@ -2328,9 +2308,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const preview = messageElement.querySelector('.image-gen-preview');
       const prevBtn = messageElement.querySelector('.prev-image-btn');
       const nextBtn = messageElement.querySelector('.next-image-btn');
-
+      
       let currentIndex = 0;
-
+      
       // Show preview when a thumbnail is clicked
       thumbnails.forEach((thumbnail, index) => {
         thumbnail.addEventListener('click', () => {
@@ -2338,23 +2318,23 @@ document.addEventListener("DOMContentLoaded", function () {
           showPreview();
         });
       });
-
+      
       // Navigation buttons
       prevBtn.addEventListener('click', () => {
         currentIndex = (currentIndex - 1 + images.length) % images.length;
         updatePreview();
       });
-
+      
       nextBtn.addEventListener('click', () => {
         currentIndex = (currentIndex + 1) % images.length;
         updatePreview();
       });
-
+      
       function showPreview() {
         previewContainer.style.display = 'flex';
         updatePreview();
       }
-
+      
       function updatePreview() {
         const image = images[currentIndex];
         preview.innerHTML = `
@@ -2363,7 +2343,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <button class="save-image-btn" data-url="${image.url}">Save Image</button>
           </div>
         `;
-
+        
         // Add save button functionality
         preview.querySelector('.save-image-btn').addEventListener('click', () => {
           const url = image.url;
@@ -2372,7 +2352,7 @@ document.addEventListener("DOMContentLoaded", function () {
           link.download = `generated-image-${Date.now()}.png`;
           link.click();
         });
-
+        
         // Make image clickable to view in modal
         preview.querySelector('.preview-image').addEventListener('click', () => {
           showImageInModal(image.url);
@@ -2435,11 +2415,11 @@ document.addEventListener("DOMContentLoaded", function () {
           try {
             // For Puter API, we need to format the message specially for vision analysis
             const visionPrompt = messageWithContext + " (Please analyze this image in detail)";
-
+            
             // This would use the actual Puter vision API
             // For demo purposes, we're using a regular message with context
             messageWithContext = visionPrompt;
-
+            
             // For each image, add to the context
             images.forEach(img => {
               messageWithContext += `\n\nImage: ${img.name}`;
@@ -2467,17 +2447,17 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       const formattedMessages = [];
-
+      
       // Add system prompt if available
       if (systemPrompt) {
         formattedMessages.push({ role: "system", content: systemPrompt });
       }
-
+      
       // Add chat history for context
       for (const msg of await getChatHistory()) {
         formattedMessages.push(msg);
       }
-
+      
       // Add current user message
       formattedMessages.push({ role: "user", content: messageWithContext });
 
@@ -2500,12 +2480,12 @@ document.addEventListener("DOMContentLoaded", function () {
           const contentElement = aiMessageElement.querySelector(".message-content");
           if (contentElement) {
             contentElement.innerHTML = marked.parse(fullResponse);
-
+            
             // Activate syntax highlighting for code blocks
             setTimeout(() => {
               Prism.highlightAllUnder(contentElement);
             }, 0);
-
+            
             aiMessageElement.scrollIntoView({ behavior: "smooth" });
           }
         }
@@ -2513,14 +2493,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Store the message in chat history
         saveChatMessage("user", userMessage);
         saveChatMessage("assistant", fullResponse);
-
-        // Activate syntax highlighting for code blocks in the response
-        const contentElement = aiMessageElement.querySelector(".message-content");
-        if (contentElement) {
-          setTimeout(() => {
-            Prism.highlightAllUnder(contentElement);
-          }, 100);
-        }
 
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {
@@ -2541,14 +2513,6 @@ document.addEventListener("DOMContentLoaded", function () {
         // Store the message in chat history
         saveChatMessage("user", userMessage);
         saveChatMessage("assistant", response.text);
-
-        // Activate syntax highlighting for code blocks in the response
-        const contentElement = aiMessageElement.querySelector(".message-content");
-        if (contentElement) {
-          setTimeout(() => {
-            Prism.highlightAllUnder(contentElement);
-          }, 100);
-        }
 
         // Speak response if text-to-speech is enabled
         if (isTtsEnabled) {
@@ -2593,7 +2557,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (role === "user") {
       messageElement.innerHTML = `
         <div class="message-header">
-          <span class="message-label">You: </span><span class="message-timestamp">${timestamp}</span>
+          <span class="message-label">You</span><span class="message-timestamp">${timestamp}</span>
         </div>
         <div class="message-content">${content}</div>
         <div class="message-actions">
@@ -2660,7 +2624,7 @@ document.addEventListener("DOMContentLoaded", function () {
     } else if (role === "assistant") {
       messageElement.innerHTML = `
         <div class="message-header">
-          <span class="message-label">AI: </span><span class="message-timestamp">${timestamp}</span>
+          <span class="message-label">AI</span><span class="message-timestamp">${timestamp}</span>
         </div>
         <div class="message-content">${content ? marked.parse(content) : ""}</div>
         <div class="message-actions assistant-actions">
@@ -2672,7 +2636,7 @@ document.addEventListener("DOMContentLoaded", function () {
             </svg>
           </div>
           <div class="action-button copy-button" title="Copy message">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2424" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
               <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
             </svg>
@@ -2900,7 +2864,7 @@ document.addEventListener("DOMContentLoaded", function () {
     await puter.kv.del("chat_history");
 
     // Add welcome message
-    //addMessageToChat("assistant", "Hello! How can I help you today?");
+    addMessageToChat("assistant", "Hello! How can I help you today?");
   }
 
   // Save chat message to KV store
@@ -2977,11 +2941,15 @@ document.addEventListener("DOMContentLoaded", function () {
         history.forEach((msg) => {
           addMessageToChat(msg.role, msg.content);
         });
+      } else if (!skipWelcome) {
+        // Add welcome message for new users
+        addMessageToChat("assistant", "Hello! How can I help you today?");
       }
-      // Removed welcome message completely
     } catch (error) {
       console.error("Failed to load chat history:", error);
-      // No welcome message on error either
+      if (!skipWelcome) {
+        addMessageToChat("assistant", "Hello! How can I help you today?");
+      }
     }
   }
 
@@ -2992,32 +2960,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (attachment.type.startsWith("image/")) {
       try {
         const base64 = await fileToBase64(attachment);
-
-        // Add thumbnail preview to the chat
-        const thumbnailHTML = `
-          <div class="chat-image-thumbnail">
-            <img src="${base64}" alt="${attachment.name}" title="${attachment.name}">
-            <span class="remove-thumbnail">×</span>
-          </div>
-        `;
-
-        // Insert thumbnail to the attachmentPreview
-        const thumbnailDiv = document.createElement('div');
-        thumbnailDiv.innerHTML = thumbnailHTML;
-        thumbnailDiv.firstElementChild.querySelector('.remove-thumbnail').addEventListener('click', function() {
-          this.parentElement.remove();
-        });
-
-        attachmentPreview.appendChild(thumbnailDiv.firstElementChild);
-
-        // Return data for AI processing
-        return { 
-          type: "image", 
-          name: attachment.name, 
-          data: base64,
-          // Add vision compatibility flag to ensure image is processed by vision models
-          isVisionCompatible: true 
-        };
+        return { type: "image", name: attachment.name, data: base64 };
       } catch (error) {
         console.error("Failed to process image:", error);
         return null;
@@ -3026,85 +2969,37 @@ document.addEventListener("DOMContentLoaded", function () {
       attachment.type === "application/pdf" ||
       attachment.name.endsWith(".docx") ||
       attachment.name.endsWith(".doc") ||
-      attachment.name.endsWith(".txt") ||
-      attachment.name.endsWith(".rtf") ||
-      attachment.name.endsWith(".md") ||
-      attachment.name.endsWith(".json") ||
-      attachment.name.endsWith(".csv")
+      attachment.name.endsWith(".txt")
     ) {
-      try {
-        // For documents, we'll read their content if possible
-        const content = await readFileContent(attachment);
-
-        // Create document thumbnail
-        const docIcon = getDocumentIcon(attachment.name);
-        const thumbnailHTML = `
-          <div class="chat-image-thumbnail document-thumbnail">
-            <div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f8f9fa;">
-              ${docIcon}
-            </div>
-            <span class="remove-thumbnail">×</span>
-          </div>
-        `;
-
-        // Insert thumbnail
-        const thumbnailDiv = document.createElement('div');
-        thumbnailDiv.innerHTML = thumbnailHTML;
-        thumbnailDiv.firstElementChild.querySelector('.remove-thumbnail').addEventListener('click', function() {
-          this.parentElement.remove();
-        });
-
-        attachmentPreview.appendChild(thumbnailDiv.firstElementChild);
-
-        return { 
-          type: "document", 
-          name: attachment.name, 
-          data: content || "Unable to extract document content", 
-          isOCRCompatible: true
-        };
-      } catch (error) {
-        console.error("Failed to process document:", error);
-        return { type: "document", name: attachment.name, data: "Error processing document: " + error.message };
-      }
+      // Simulate OCR - in real application, call OCR API here
+      return { type: "document", name: attachment.name, data: "OCR Result Placeholder" };
     } else {
       return null;
     }
   }
 
-  // Helper to read various document formats
-  async function readFileContent(file) {
-    if (file.type === "text/plain" || 
-        file.name.endsWith(".txt") || 
-        file.name.endsWith(".md") || 
-        file.name.endsWith(".json") || 
-        file.name.endsWith(".csv")) {
-      return await readFileAsText(file);
+  // New function to process attachments for AI
+  async function processAttachmentForAI(attachment) {
+    if (!attachment) return null;
+
+    if (attachment.type.startsWith("image/")) {
+      try {
+        const base64 = await fileToBase64(attachment);
+        return { type: "image", name: attachment.name, data: base64 };
+      } catch (error) {
+        console.error("Failed to process image:", error);
+        return null;
+      }
+    } else if (
+      attachment.type === "application/pdf" ||
+      attachment.name.endsWith(".docx") ||
+      attachment.name.endsWith(".doc") ||
+      attachment.name.endsWith(".txt")
+    ) {
+      // Simulate OCR - in real application, call OCR API here
+      return { type: "document", name: attachment.name, data: "OCR Result Placeholder" };
+    } else {
+      return null;
     }
-
-    // For other document types, return placeholder
-    // In a full implementation, we'd use specialized libraries or APIs for each format
-    return `Document content from ${file.name} (${file.type}). In a real implementation, this would contain the extracted text.`;
-  }
-
-  // Helper to get document icon based on file extension
-  function getDocumentIcon(filename) {
-    const extension = filename.split('.').pop().toLowerCase();
-    const iconColor = {
-      'pdf': '#f40f02',
-      'doc': '#2b579a',
-      'docx': '#2b579a',
-      'txt': '#333333',
-      'md': '#663399',
-      'csv': '#217346',
-      'json': '#f5de1a',
-      'xls': '#217346',
-      'xlsx': '#217346'
-    }[extension] || '#888888';
-
-    return `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="${iconColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-      <polyline points="14 2 14 8 20 8"></polyline>
-      <text x="12" y="16" text-anchor="middle" font-size="6" fill="${iconColor}" font-weight="bold">${extension.toUpperCase()}</text>
-    </svg>`;
   }
 });
